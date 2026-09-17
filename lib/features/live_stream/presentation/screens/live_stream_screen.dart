@@ -121,7 +121,7 @@ class _LiveStreamPageState extends ConsumerState<_LiveStreamPage> {
       setState(() {
         _recentGift = gift;
       });
-      Future.delayed(const Duration(milliseconds: 3200), () {
+      Future.delayed(const Duration(milliseconds: 4500), () {
         if (mounted) {
           setState(() => _recentGift = null);
         }

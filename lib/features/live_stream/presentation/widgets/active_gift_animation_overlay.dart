@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../domain/models/gift_item.dart';
 
-/// 3D Animated Isolated Gift Effects Overlay with Cinematic Atmospheric Backdrop
-/// Sequence Rule for every gift:
-/// Appear ➔ Movement ➔ Main Action ➔ Special Effect / Particles ➔ Disappear
-/// - Multi-stage dynamic animations (4.5 sec) at 60 FPS
-/// - ZERO solid square card backgrounds (pure transparent isolated 3D graphics)
-/// - ONLY the gift and its visual effects animate; all livestream video, chat, and controls remain visible.
-/// - Atmospheric Environmental Backdrop immerses the live screen behind each gift.
-/// - Centered at screenHeight * 0.23 so gifts stay strictly inside the video arena and never collide with PK score bar.
+/// Tiki 3D Animated Isolated Gift Effects Overlay with Full-Screen Environmental Engine
+/// Perfectly matches the 10 Master Tiki Gifts in reference poster:
+/// 1. 👑 Royal Crown (The Highest Gift): Golden pedestal, vertical light pillars, golden sparkle rain.
+/// 2. 🕊️ Angel Vehicle (Divine Blessings): Heavenly god-rays, floating feathers & white doves.
+/// 3. 🐎 Golden Horse (Power & Success): Swirling golden stardust energy vortex ribbons.
+/// 4. 🏎️ Luxury Car (Drive Your Dreams): Neon cyber highway, speed streaks, celebration fireworks!
+/// 5. 🏰 Love Castle (A World of Love): Ascending glowing 3D neon hearts & heart fireworks bursts!
+/// 6. 🚀 Galaxy Rocket (To the Stars): Deep cosmic galaxy, 120+ twinkling stars, planet, dual plasma jets!
+/// 7. 💎 Diamond Wings (Fly Higher): Prismatic rainbow dispersion rays, 35+ diamond starburst glints!
+/// 8. 🌹 Flower Chariot / Rose (A Journey of Love): Full-screen shower of 36+ tumbling 3D rose petals & fireflies!
+/// 9. 🐋 Ocean Whale (Big Dreams): Deep ocean abyss, sunlight caustics & 32 ascending bioluminescent bubbles!
+/// 10. ⭐ Meteor Shower (Wishes Come True): 35 golden shooting stars cascading diagonally across screen!
 class ActiveGiftAnimationOverlay extends StatefulWidget {
   final Widget child;
 
@@ -277,7 +281,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
       _roseController.forward(from: 0.0);
     } else if (idLower.contains('crown') || nameLower.contains('crown')) {
       _crownController.forward(from: 0.0);
-    } else if (idLower.contains('diamond') || nameLower.contains('diamond')) {
+    } else if (idLower.contains('diamond') || nameLower.contains('diamond') || idLower.contains('meteor')) {
       _diamondController.forward(from: 0.0);
     } else if (idLower.contains('cake') || nameLower.contains('cake')) {
       _cakeController.forward(from: 0.0);
@@ -356,9 +360,11 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     if (idLower.contains('rocket') || nameLower.contains('rocket')) return 'rocket';
     if (idLower.contains('car') || nameLower.contains('car')) return 'car';
     if (idLower.contains('yacht') || nameLower.contains('yacht')) return 'yacht';
-    if (idLower.contains('whale') || nameLower.contains('whale')) return 'yacht';
+    if (idLower.contains('whale') || nameLower.contains('whale')) return 'whale';
     if (idLower.contains('wing') || nameLower.contains('wing')) return 'wings';
-    if (idLower.contains('angel') || nameLower.contains('angel')) return 'wings';
+    if (idLower.contains('angel_vehicle') || (nameLower.contains('angel') && nameLower.contains('vehicle'))) {
+      return 'angel_vehicle';
+    }
     if (idLower.contains('rose') || nameLower.contains('rose')) return 'rose';
     if (idLower.contains('flower') ||
         nameLower.contains('flower') ||
@@ -367,7 +373,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
       return 'flowers';
     }
     if (idLower.contains('crown') || nameLower.contains('crown')) return 'crown';
-    if (idLower.contains('diamond') || nameLower.contains('diamond')) return 'diamond';
+    if (idLower.contains('diamond') || nameLower.contains('diamond') || idLower.contains('meteor')) return 'diamond';
     if (idLower.contains('cake') || nameLower.contains('cake')) return 'cake';
     if (idLower.contains('teddy') || nameLower.contains('teddy') || idLower.contains('panda')) return 'teddy';
     if (idLower.contains('kitty') || nameLower.contains('kitty') || idLower.contains('cat')) return 'kitty';
@@ -388,7 +394,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
       children: [
         widget.child,
 
-        // Cinematic Atmospheric Environmental Backdrop Layer
+        // Full-Screen Atmospheric Environmental Engine Layer
         if (activeController != null && giftCategory.isNotEmpty)
           _buildAtmosphericBackdrop(activeController, giftCategory),
 
@@ -419,14 +425,15 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   }
 
   // ===========================================================================
-  // ATMOSPHERIC ENVIRONMENTAL BACKDROP SYSTEM
-  // Smoothly immerses the live screen behind the active gift
+  // FULL-SCREEN CINEMATIC ATMOSPHERIC ENVIRONMENTAL ENGINE
+  // Transforms the live screen into an active, immersive 3D spectacle!
   // ===========================================================================
   Widget _buildAtmosphericBackdrop(AnimationController controller, String category) {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, child) {
         final val = controller.value;
+        // Smooth entrance (0..0.12) and exit (0.88..1.0)
         final fade = (val < 0.12 ? (val / 0.12) : (val > 0.88 ? (1.0 - val) / 0.12 : 1.0)).clamp(0.0, 1.0);
         if (fade <= 0.0) return const SizedBox.shrink();
 
@@ -439,66 +446,100 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               opacity: fade,
               child: Stack(
                 children: [
-                  // Base Ambient Vignette / Dimmer: Dims live video gently for contrast without hiding host
+                  // Base Ambient Vignette / Dimmer: Dims video softly to make 3D gifts shine with maximum brilliance
                   Container(
                     decoration: BoxDecoration(
                       gradient: RadialGradient(
-                        center: const Alignment(0.0, -0.52),
-                        radius: 1.1,
+                        center: const Alignment(0.0, -0.45),
+                        radius: 1.15,
                         colors: [
                           category == 'rocket'
-                              ? const Color(0xEE030612)
+                              ? const Color(0xF2030612)
                               : category == 'car'
                                   ? const Color(0x99000000)
                                   : const Color(0x66000000),
-                          const Color(0xBB000000),
+                          const Color(0xCC000000),
                         ],
                       ),
                     ),
                   ),
 
-                  // 1. Cosmic Deep Space Starfield & Nebula (Matches user's reference Photo 2!)
+                  // 1. 🌹 FLOWER CHARIOT & ROSE: Full-Screen Falling & Swirling 3D Petal Rain & Fireflies!
+                  if (category == 'rose' || category == 'flowers')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullPetalRainPainter(progress: val),
+                    ),
+
+                  // 2. 🚀 GALAXY ROCKET: Deep Space Cosmic Galaxy with Planets, Nebulae & 120+ Stars!
                   if (category == 'rocket')
                     CustomPaint(
                       size: Size(screenWidth, screenHeight),
-                      painter: _SpaceStarfieldPainter(progress: val),
+                      painter: _FullSpaceGalaxyPainter(progress: val),
                     ),
 
-                  // 2. High-speed Highway Track & Speed Streaks for Super Car
+                  // 3. 👑 ROYAL CROWN: Giant Golden Pedestal, Vertical God-Rays & Golden Sparkle Rain!
+                  if (category == 'crown')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullRoyalGoldenShowerPainter(progress: val),
+                    ),
+
+                  // 4. 🏰 LOVE CASTLE & TIKI LOVE: Ascending Glowing 3D Neon Hearts & Heart Fireworks!
+                  if (category == 'castle' || category == 'love' || category == 'kitty' || category == 'teddy')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullLoveHeartsPainter(progress: val),
+                    ),
+
+                  // 5. 🏎️ LUXURY SUPER CAR: Neon Cyber Highway Speed Streaks & Celebration Fireworks!
                   if (category == 'car')
-                    _buildHighwayBackdrop(screenWidth, screenHeight, val),
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullHighwayFireworksPainter(progress: val),
+                    ),
 
-                  // 3. Deep Ocean Caustics & Sea Surface Mist for Yacht
-                  if (category == 'yacht')
-                    _buildOceanBackdrop(screenWidth, screenHeight, val),
+                  // 6. 🐋 OCEAN WHALE & YACHT: Deep Ocean Caustics & Ascending Bioluminescent Bubbles!
+                  if (category == 'whale' || category == 'yacht')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullOceanBubblesPainter(progress: val),
+                    ),
 
-                  // 4. Heavenly Golden God-Rays for Angel Wings
+                  // 7. 💎 DIAMOND WINGS: Prismatic Rainbow Dispersion Rays & Diamond Starburst Glints!
                   if (category == 'wings')
-                    _buildHeavenlyBackdrop(screenWidth, screenHeight, val),
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullDiamondPrismPainter(progress: val),
+                    ),
 
-                  // 5. Royal Twilight Aurora & Starry Sky for Castle
-                  if (category == 'castle')
-                    _buildCastleBackdrop(screenWidth, screenHeight, val),
+                  // 8. ⭐ METEOR SHOWER / DIAMOND: Golden Shooting Stars Raining Diagonally!
+                  if (category == 'diamond')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullMeteorShowerPainter(progress: val),
+                    ),
 
-                  // 6. Romantic Blossom Aura & Petal Breeze for Flowers/Rose
-                  if (category == 'flowers' || category == 'rose')
-                    _buildFloralGardenBackdrop(screenWidth, screenHeight, val),
+                  // 9. 🐎 GOLDEN HORSE: Golden Energy Vortex Ribbons & Stardust Blast!
+                  if (category == 'horse')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullGoldenHorseVortexPainter(progress: val),
+                    ),
 
-                  // 7. VIP Luxury Spotlights & Prismatic Flares for Diamond/Crown
-                  if (category == 'diamond' || category == 'crown')
-                    _buildLuxurySpotlightBackdrop(screenWidth, screenHeight, val),
+                  // 10. 🕊️ ANGEL VEHICLE: Divine Heavenly God-Rays & Floating Feathers!
+                  if (category == 'angel_vehicle')
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullHeavenlyBlessingPainter(progress: val),
+                    ),
 
-                  // 8. Celebration Festive Bokeh & Confetti for Cake
+                  // 11. 🎂 CELEBRATION CAKE: Confetti & Party Bokeh
                   if (category == 'cake')
-                    _buildCelebrationBackdrop(screenWidth, screenHeight, val),
-
-                  // 9. Dreamy Romantic Heart Glow for Love/Kitty/Teddy
-                  if (category == 'love' || category == 'teddy' || category == 'kitty')
-                    _buildRomanticLoveBackdrop(screenWidth, screenHeight, val),
-
-                  // 10. Orbital Flight Paths & Earth Glow for World Tour
-                  if (category == 'world_tour')
-                    _buildWorldTourBackdrop(screenWidth, screenHeight, val),
+                    CustomPaint(
+                      size: Size(screenWidth, screenHeight),
+                      painter: _FullCelebrationConfettiPainter(progress: val),
+                    ),
                 ],
               ),
             ),
@@ -508,231 +549,134 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  Widget _buildHighwayBackdrop(double width, double height, double progress) {
-    return Stack(
-      children: [
-        // Road surface horizon warm glow
-        Positioned(
-          top: height * 0.12,
-          left: 0,
-          right: 0,
-          height: height * 0.22,
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0x00000000),
-                  Color(0x33FF6D00),
-                  Color(0x55000000),
-                  Color(0x00000000),
-                ],
-                stops: [0.0, 0.35, 0.70, 1.0],
+  // ===========================================================================
+  // 4. 🌹 ROSE / FLOWER CHARIOT ("A Journey of Love - Petal Rain")
+  // Sequence: ① Appear ➔ ② Move ➔ ③ Full View ➔ ④ Petal Rain
+  // ===========================================================================
+  Widget _buildRoseAnimation() {
+    return AnimatedBuilder(
+      animation: _roseController,
+      builder: (context, child) {
+        final val = _roseController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 210) / 2;
+        final double startY = screenHeight * 0.42;
+        final double targetY = screenHeight * 0.23;
+        final double exitY = screenHeight * 0.44;
+
+        double posY;
+        double scale;
+        double opacity = 1.0;
+
+        if (val < 0.25) {
+          final p = Curves.easeOutCubic.transform(val / 0.25);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          final p = (val - 0.25) / 0.50;
+          posY = targetY + (sin(p * 2 * pi) * 4);
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
+        final double breezeSway = sin(val * 4 * pi) * 0.035;
+
+        return Stack(
+          children: [
+            // Soft Realistic Ground Contact Shadow
+            _buildRealisticGroundShadow(
+              centerX: centerX + 105,
+              groundY: posY + 165,
+              scale: scale,
+              width: 190,
+            ),
+
+            // Pure 3D Blooming Rose with Glowing Pedestal (Ugly Sticker Pill Clipped Off!)
+            Positioned(
+              left: centerX,
+              top: posY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Transform.rotate(
+                      angle: breezeSway,
+                      child: SizedBox(
+                        width: 210,
+                        height: 210,
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: [
+                            // 3D Glowing Circular Magic Ring Platform Beneath Rose
+                            Positioned(
+                              bottom: 12,
+                              child: Container(
+                                width: 170,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  gradient: const RadialGradient(
+                                    colors: [
+                                      Color(0xFFFF4081),
+                                      Color(0xFF7C4DFF),
+                                      Colors.transparent,
+                                    ],
+                                    stops: [0.0, 0.65, 1.0],
+                                  ),
+                                  boxShadow: const [
+                                    BoxShadow(
+                                      color: Color(0xAAFF4081),
+                                      blurRadius: 20,
+                                      spreadRadius: 3,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // Ultra-realistic Blooming Rose (Clipped to remove the ugly sticker pill!)
+                            SizedBox(
+                              width: 200,
+                              height: 200,
+                              child: ClipRect(
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  heightFactor: 0.74, // Perfectly cuts off the bottom "Rose | 1" button!
+                                  child: _buildRealisticSpecularSheen(
+                                    progress: val,
+                                    lightColor: const Color(0xFFFF80AB),
+                                    child: Image.asset(
+                                      AppAssets.giftRose,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-        // Dynamic horizontal speed streaks racing past
-        CustomPaint(
-          size: Size(width, height),
-          painter: _HighwaySpeedStreaksPainter(progress: progress),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOceanBackdrop(double width, double height, double progress) {
-    return Positioned(
-      top: height * 0.08,
-      left: 0,
-      right: 0,
-      height: height * 0.30,
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0x0000E5FF),
-              const Color(0x4400B0FF).withOpacity(0.35),
-              const Color(0x55002171),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.40, 0.80, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeavenlyBackdrop(double width, double height, double progress) {
-    return Positioned.fill(
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.55),
-            radius: 0.95,
-            colors: [
-              Color(0x44FFD54F),
-              Color(0x22FFA000),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.45, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCastleBackdrop(double width, double height, double progress) {
-    return Positioned(
-      top: height * 0.06,
-      left: 0,
-      right: 0,
-      height: height * 0.34,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.40),
-            radius: 0.90,
-            colors: [
-              Color(0x447C4DFF),
-              Color(0x22304FFE),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.50, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloralGardenBackdrop(double width, double height, double progress) {
-    return Positioned(
-      top: height * 0.08,
-      left: 0,
-      right: 0,
-      height: height * 0.30,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.45),
-            radius: 0.85,
-            colors: [
-              Color(0x44FF80AB),
-              Color(0x22F48FB1),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.50, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLuxurySpotlightBackdrop(double width, double height, double progress) {
-    final sweep = sin(progress * 4 * pi) * 0.35;
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      height: height * 0.45,
-      child: Transform.rotate(
-        angle: sweep,
-        alignment: const Alignment(0.0, -1.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0x55FFF9C4),
-                Color(0x22FFD54F),
-                Colors.transparent,
-              ],
-              stops: [0.0, 0.50, 1.0],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCelebrationBackdrop(double width, double height, double progress) {
-    return Positioned(
-      top: height * 0.08,
-      left: 0,
-      right: 0,
-      height: height * 0.32,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.45),
-            radius: 0.90,
-            colors: [
-              Color(0x44FFE082),
-              Color(0x22FFB74D),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.50, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRomanticLoveBackdrop(double width, double height, double progress) {
-    return Positioned(
-      top: height * 0.08,
-      left: 0,
-      right: 0,
-      height: height * 0.32,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.45),
-            radius: 0.90,
-            colors: [
-              Color(0x44F06292),
-              Color(0x22BA68C8),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.50, 1.0],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWorldTourBackdrop(double width, double height, double progress) {
-    return Positioned(
-      top: height * 0.06,
-      left: 0,
-      right: 0,
-      height: height * 0.34,
-      child: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(0.0, -0.40),
-            radius: 0.90,
-            colors: [
-              Color(0x4400E5FF),
-              Color(0x221565C0),
-              Colors.transparent,
-            ],
-            stops: [0.0, 0.50, 1.0],
-          ),
-        ),
-      ),
+          ],
+        );
+      },
     );
   }
 
   // ===========================================================================
-  // 1. 🏎️ SUPER CAR
-  // "Create an ultra-realistic cinematic animation of the super car...
-  // Photorealistic car physics, realistic road interaction, cinematic camera movement,
-  // no cartoon effects, no fantasy effects."
+  // 1. 🏎️ LUXURY SUPER CAR ("Drive Your Dreams - Fireworks")
+  // Sequence: ① Appear ➔ ② Drive In ➔ ③ Full View ➔ ④ Fireworks
   // ===========================================================================
   Widget _buildSuperCarAnimation() {
     return AnimatedBuilder(
@@ -743,7 +687,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double targetCenterX = (screenWidth - 230) / 2;
-        // Positioned comfortably inside video arena (never covers PK clash score bar)
         final double targetCenterY = screenHeight * 0.23;
 
         final double offscreenLeft = -260.0;
@@ -757,7 +700,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         double opacity = 1.0;
         bool isDrifting = false;
 
-        // Flow: Start -> Headlights -> Drive in -> Accelerate -> Drift -> Pass -> Exit
         if (val < 0.22) {
           final p = Curves.easeOutQuad.transform(val / 0.22);
           posX = offscreenLeft + (p * (targetCenterX - 40 - offscreenLeft));
@@ -791,7 +733,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
         return Stack(
           children: [
-            // Realistic Asphalt Ground Contact Shadow Beneath Tires
             _buildRealisticGroundShadow(
               centerX: posX + 115,
               groundY: posY + 88,
@@ -799,24 +740,18 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               elevation: suspensionDip,
               width: 220,
             ),
-
-            // Drift tire smoke & road sparks near rear wheels
             if (isDrifting)
               _buildSubtleTireDriftVfx(
                 left: posX + 20,
                 top: posY + 76,
                 opacity: (sin((val - 0.48) / 0.22 * pi)).clamp(0.0, 1.0),
               ),
-
-            // Soft Radial Headlight Glow (NO rectangular boxes!)
             if (val >= 0.06)
               _buildRealisticHeadlightGlow(
                 left: posX + 160,
                 top: posY + 16,
                 opacity: ((val - 0.06) / 0.15).clamp(0.0, 1.0) * opacity * 0.80,
               ),
-
-            // Photorealistic Super Car with Natural Body Reflection Sweep
             Positioned(
               left: posX,
               top: posY + suspensionDip,
@@ -835,6 +770,698 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
                           lightColor: const Color(0xFFFFD54F),
                           child: Image.asset(
                             AppAssets.giftSuperCar,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 6. 🚀 GALAXY ROCKET ("To the Stars - Galaxy Effect")
+  // Sequence: ① Appear ➔ ② Launch ➔ ③ Fly to Sky ➔ ④ Galaxy Effect
+  // ===========================================================================
+  Widget _buildRocketAnimation() {
+    return AnimatedBuilder(
+      animation: _rocketController,
+      builder: (context, child) {
+        final val = _rocketController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double startX = screenWidth * 0.08;
+        final double startY = screenHeight * 0.38;
+        final double exitX = screenWidth + 180.0;
+        final double exitY = -180.0;
+
+        double posX;
+        double posY;
+        double scale;
+        double vibration = 0.0;
+
+        if (val < 0.20) {
+          final p = val / 0.20;
+          vibration = sin(p * 48 * pi) * 2.2;
+          posX = startX;
+          posY = startY - (p * 18);
+          scale = 0.94 + (p * 0.06);
+        } else {
+          final p = Curves.easeInCubic.transform((val - 0.20) / 0.80);
+          posX = startX + (p * (exitX - startX));
+          posY = (startY - 18) + (p * (exitY - (startY - 18)));
+          scale = 1.00 + (sin(p * pi) * 0.22);
+          vibration = sin(p * 20 * pi) * (1.5 * (1.0 - p));
+        }
+
+        posX += vibration;
+        const double rocketAngle = -0.58;
+
+        return Stack(
+          children: [
+            if (val >= 0.08)
+              _buildRocketSmokePlume(
+                tailX: posX + 38,
+                tailY: posY + 115,
+                progress: val,
+              ),
+            if (val >= 0.05)
+              Positioned(
+                left: posX + 26,
+                top: posY + 106,
+                child: IgnorePointer(
+                  child: Transform.rotate(
+                    angle: rocketAngle,
+                    child: _buildDualRocketThrusterFlames(progress: val),
+                  ),
+                ),
+              ),
+            if (val >= 0.10)
+              Positioned(
+                left: posX - 10,
+                top: posY + 104,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: (sin(val * 24 * pi).abs() * 0.35 + 0.65).clamp(0.0, 1.0),
+                    child: Container(
+                      width: 120,
+                      height: 4,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.transparent,
+                            Color(0x8800E5FF),
+                            Colors.white,
+                            Color(0x8800E5FF),
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 0.25, 0.50, 0.75, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              left: posX,
+              top: posY,
+              child: IgnorePointer(
+                child: Transform.scale(
+                  scale: scale,
+                  child: Transform.rotate(
+                    angle: rocketAngle,
+                    child: SizedBox(
+                      width: 160,
+                      height: 160,
+                      child: _buildRealisticSpecularSheen(
+                        progress: val,
+                        lightColor: const Color(0xFFCFD8DC),
+                        child: Image.asset(
+                          AppAssets.giftRocket,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 1. 👑 ROYAL CROWN ("The Highest Gift - Royal Effect")
+  // Sequence: ① Appear ➔ ② Rise ➔ ③ Crown on Head ➔ ④ Royal Effect
+  // ===========================================================================
+  Widget _buildCrownAnimation() {
+    return AnimatedBuilder(
+      animation: _crownController,
+      builder: (context, child) {
+        final val = _crownController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 210) / 2;
+        final double startY = screenHeight * 0.42;
+        final double targetY = screenHeight * 0.23;
+        final double exitY = screenHeight * 0.44;
+
+        double posY;
+        double scale;
+        double opacity = 1.0;
+
+        if (val < 0.28) {
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 3);
+          scale = 1.00 + (sin(p * pi) * 0.20);
+        } else {
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
+        final double rotY = sin(val * 2 * pi) * 0.22;
+        final double rotX = -0.05 + sin(val * 2 * pi) * 0.02;
+
+        return Stack(
+          children: [
+            _buildRealisticGroundShadow(
+              centerX: centerX + 105,
+              groundY: posY + 165,
+              scale: scale,
+              elevation: (targetY - posY).abs(),
+              width: 190,
+            ),
+            _buildRealisticStudioAura(
+              centerX: centerX + 105,
+              centerY: posY + 90,
+              scale: scale,
+              color: const Color(0xFFFFD54F),
+              radius: 200,
+              opacity: 0.35 * opacity,
+            ),
+            if (val >= 0.15 && val <= 0.85) ...[
+              _buildSparkleGlint(
+                x: centerX + 55,
+                y: posY + 70,
+                progress: (val * 4.0) % 1.0,
+                color: const Color(0xFFFFD54F),
+              ),
+              _buildSparkleGlint(
+                x: centerX + 145,
+                y: posY + 65,
+                progress: ((val * 4.0) + 0.5) % 1.0,
+                color: const Color(0xFF00E5FF),
+              ),
+            ],
+            Positioned(
+              left: centerX,
+              top: posY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, 0.0014)
+                        ..rotateY(rotY)
+                        ..rotateX(rotX),
+                      child: SizedBox(
+                        width: 210,
+                        height: 200,
+                        child: _buildRealisticSpecularSheen(
+                          progress: val,
+                          lightColor: const Color(0xFFFFD54F),
+                          child: Image.asset(
+                            AppAssets.giftCrown,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 5. 🏰 LOVE CASTLE ("A World of Love - Heart Fireworks")
+  // Sequence: ① Appear ➔ ② Build ➔ ③ Full Castle ➔ ④ Heart Fireworks
+  // ===========================================================================
+  Widget _buildCastleAnimation() {
+    return AnimatedBuilder(
+      animation: _castleController,
+      builder: (context, child) {
+        final val = _castleController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 230) / 2;
+        final double startY = screenHeight * 0.42;
+        final double targetY = screenHeight * 0.23;
+        final double exitY = screenHeight * 0.38;
+
+        double posY;
+        double scale;
+        double opacity = 1.0;
+
+        if (val < 0.30) {
+          final p = Curves.easeOutCubic.transform(val / 0.30);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          final p = (val - 0.30) / 0.45;
+          posY = targetY;
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.25);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
+        return Stack(
+          children: [
+            Positioned(
+              left: centerX - 25,
+              top: posY + 160,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: (0.50 * opacity).clamp(0.0, 0.50),
+                  child: Container(
+                    width: 280,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.white.withOpacity(0.65),
+                          const Color(0xFFF48FB1).withOpacity(0.35),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.50, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (val >= 0.20)
+              _buildRealisticStudioAura(
+                centerX: centerX + 115,
+                centerY: posY + 115,
+                scale: scale,
+                color: const Color(0xFFFF4081),
+                radius: 200,
+                opacity: (0.35 * opacity).clamp(0.0, 0.35),
+              ),
+            Positioned(
+              left: centerX,
+              top: posY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: SizedBox(
+                      width: 230,
+                      height: 230,
+                      child: _buildRealisticSpecularSheen(
+                        progress: val,
+                        lightColor: const Color(0xFFFF80AB),
+                        child: Image.asset(
+                          AppAssets.giftCastle,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 7. 🪽 DIAMOND WINGS ("Fly Higher - Shine Effect")
+  // Sequence: ① Appear ➔ ② Spread ➔ ③ Full Wings ➔ ④ Shine Effect
+  // ===========================================================================
+  Widget _buildAngelWingsAnimation() {
+    return AnimatedBuilder(
+      animation: _wingsController,
+      builder: (context, child) {
+        final val = _wingsController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 240) / 2;
+        final double centerY = screenHeight * 0.23;
+
+        double scale;
+        double flapFactor;
+        double opacity = 1.0;
+
+        if (val < 0.25) {
+          final p = Curves.easeOutCubic.transform(val / 0.25);
+          scale = 0.70 + (p * 0.30);
+          flapFactor = 0.20 + (p * 0.80);
+          opacity = (p / 0.12).clamp(0.0, 1.0);
+        } else if (val < 0.75) {
+          final p = (val - 0.25) / 0.50;
+          scale = 1.00 + (sin(p * pi) * 0.18);
+          flapFactor = 0.88 + (sin(p * 4 * pi).abs() * 0.12);
+        } else {
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          scale = 1.00 - (p * 0.35);
+          flapFactor = 1.00 - (p * 0.80);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
+        final double airflowSway = sin(val * 2 * pi) * 0.025;
+        final double naturalElevation = sin(val * 2 * pi) * 6;
+        final double posY = centerY + naturalElevation;
+
+        return Stack(
+          children: [
+            _buildRealisticGroundShadow(
+              centerX: centerX + 120,
+              groundY: posY + 160,
+              scale: scale,
+              elevation: naturalElevation,
+              width: 220,
+            ),
+            Positioned(
+              left: centerX,
+              top: posY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, 0.0012)
+                        ..rotateZ(airflowSway)
+                        ..scale(flapFactor, 1.0, 1.0),
+                      child: SizedBox(
+                        width: 240,
+                        height: 200,
+                        child: _buildRealisticSpecularSheen(
+                          progress: val,
+                          lightColor: const Color(0xFFE0F7FA),
+                          child: Image.asset(
+                            AppAssets.giftAngelWings,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 3. 🐎 GOLDEN HORSE ("Power & Success - Final Effect")
+  // Sequence: ① Appear ➔ ② Run ➔ ③ Full Speed ➔ ④ Final Effect
+  // ===========================================================================
+  Widget _buildGoldenHorseAnimation() {
+    return AnimatedBuilder(
+      animation: _horseController,
+      builder: (context, child) {
+        final val = _horseController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 230) / 2;
+        final double centerY = screenHeight * 0.23;
+
+        final double scale = 0.94 + (sin(val * pi) * 0.14);
+        final double tiltAngle = sin(val * 2 * pi) * 0.03;
+        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+
+        return Stack(
+          children: [
+            _buildRealisticGroundShadow(
+              centerX: centerX + 115,
+              groundY: centerY + 175,
+              scale: scale,
+              width: 200,
+            ),
+            Positioned(
+              left: centerX,
+              top: centerY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Transform.rotate(
+                      angle: tiltAngle,
+                      child: SizedBox(
+                        width: 230,
+                        height: 210,
+                        child: _buildRealisticSpecularSheen(
+                          progress: val,
+                          lightColor: const Color(0xFFFFD54F),
+                          child: Image.asset(
+                            AppAssets.giftGoldenHorse,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 9. 🐋 OCEAN WHALE ("Big Dreams - Water Effect")
+  // Sequence: ① Appear ➔ ② Swim In ➔ ③ Full View ➔ ④ Water Effect
+  // ===========================================================================
+  Widget _buildOceanWhaleAnimation() {
+    return AnimatedBuilder(
+      animation: _whaleController,
+      builder: (context, child) {
+        final val = _whaleController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 240) / 2;
+        final double centerY = screenHeight * 0.23;
+
+        final double scale = 0.95 + (sin(val * pi) * 0.12);
+        final double waveBob = sin(val * 4 * pi) * 5;
+        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+
+        return Stack(
+          children: [
+            _buildRealisticWaterRipples(
+              left: centerX,
+              top: centerY + 175,
+              width: 240,
+              progress: val,
+              opacity: 0.60 * opacity,
+            ),
+            Positioned(
+              left: centerX,
+              top: centerY + waveBob,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: SizedBox(
+                      width: 240,
+                      height: 210,
+                      child: _buildRealisticSpecularSheen(
+                        progress: val,
+                        lightColor: const Color(0xFF80D8FF),
+                        child: Image.asset(
+                          AppAssets.giftOceanWhale,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 2. 🕊️ ANGEL VEHICLE ("Divine Blessings - Blessing Effect")
+  // Sequence: ① Appear ➔ ② Fly In ➔ ③ Full View ➔ ④ Blessing Effect
+  // ===========================================================================
+  Widget _buildAngelVehicleAnimation() {
+    return AnimatedBuilder(
+      animation: _angelVehicleController,
+      builder: (context, child) {
+        final val = _angelVehicleController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 240) / 2;
+        final double centerY = screenHeight * 0.23;
+
+        final double scale = 0.94 + (sin(val * pi) * 0.14);
+        final double sway = sin(val * 2 * pi) * 0.03;
+        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+
+        return Stack(
+          children: [
+            _buildRealisticGroundShadow(
+              centerX: centerX + 120,
+              groundY: centerY + 175,
+              scale: scale,
+              width: 220,
+            ),
+            Positioned(
+              left: centerX,
+              top: centerY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Transform.rotate(
+                      angle: sway,
+                      child: SizedBox(
+                        width: 240,
+                        height: 210,
+                        child: _buildRealisticSpecularSheen(
+                          progress: val,
+                          lightColor: const Color(0xFFFFF9C4),
+                          child: Image.asset(
+                            AppAssets.giftAngelVehicle,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ===========================================================================
+  // 10. ⭐ METEOR SHOWER / DIAMOND ("Wishes Come True - Star Rain")
+  // Sequence: ① Appear ➔ ② Star Rain ➔ ③ Full Effect ➔ ④ Shine
+  // ===========================================================================
+  Widget _buildDiamondAnimation() {
+    return AnimatedBuilder(
+      animation: _diamondController,
+      builder: (context, child) {
+        final val = _diamondController.value;
+        final screenWidth = MediaQuery.sizeOf(context).width;
+        final screenHeight = MediaQuery.sizeOf(context).height;
+
+        final double centerX = (screenWidth - 200) / 2;
+        final double startY = screenHeight * 0.42;
+        final double targetY = screenHeight * 0.23;
+        final double exitY = screenHeight * 0.44;
+
+        double posY;
+        double scale;
+        double opacity = 1.0;
+
+        if (val < 0.28) {
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 4);
+          scale = 1.00 + (sin(p * pi) * 0.22);
+        } else {
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
+        final double rotY = sin(val * 2 * pi) * 0.35;
+        final double rotZ = sin(val * 4 * pi) * 0.04;
+
+        return Stack(
+          children: [
+            _buildRealisticGroundShadow(
+              centerX: centerX + 100,
+              groundY: posY + 160,
+              scale: scale,
+              elevation: (targetY - posY).abs(),
+              width: 170,
+            ),
+            _buildRealisticStudioAura(
+              centerX: centerX + 100,
+              centerY: posY + 90,
+              scale: scale,
+              color: const Color(0xFF00E5FF),
+              radius: 220,
+              opacity: 0.35 * opacity,
+            ),
+            if (val >= 0.18 && val <= 0.85) ...[
+              _buildSparkleGlint(
+                x: centerX + 70,
+                y: posY + 60,
+                progress: (val * 5.0) % 1.0,
+                color: Colors.white,
+              ),
+              _buildSparkleGlint(
+                x: centerX + 120,
+                y: posY + 95,
+                progress: ((val * 5.0) + 0.4) % 1.0,
+                color: const Color(0xFF80D8FF),
+              ),
+            ],
+            Positioned(
+              left: centerX,
+              top: posY,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: opacity,
+                  child: Transform.scale(
+                    scale: scale,
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, 0.0014)
+                        ..rotateY(rotY)
+                        ..rotateZ(rotZ),
+                      child: SizedBox(
+                        width: 200,
+                        height: 200,
+                        child: _buildRealisticSpecularSheen(
+                          progress: val,
+                          lightColor: const Color(0xFFE0F7FA),
+                          child: Image.asset(
+                            AppAssets.giftDiamond,
                             fit: BoxFit.contain,
                           ),
                         ),
@@ -928,665 +1555,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   }
 
   // ===========================================================================
-  // 11. 🚀 ROCKET (Matches User Reference Photo 2!)
-  // Cosmic Space Environment, Dual Thruster Flames, Billowy Smoke Clouds & Embers
-  // ===========================================================================
-  Widget _buildRocketAnimation() {
-    return AnimatedBuilder(
-      animation: _rocketController,
-      builder: (context, child) {
-        final val = _rocketController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double startX = screenWidth * 0.08;
-        final double startY = screenHeight * 0.38;
-        final double exitX = screenWidth + 180.0;
-        final double exitY = -180.0;
-
-        double posX;
-        double posY;
-        double scale;
-        double vibration = 0.0;
-
-        if (val < 0.20) {
-          // Engine ignition & liftoff vibration at bottom-left
-          final p = val / 0.20;
-          vibration = sin(p * 48 * pi) * 2.2;
-          posX = startX;
-          posY = startY - (p * 18);
-          scale = 0.94 + (p * 0.06);
-        } else {
-          // Accelerate diagonally across live video toward upper-right into deep space
-          final p = Curves.easeInCubic.transform((val - 0.20) / 0.80);
-          posX = startX + (p * (exitX - startX));
-          posY = (startY - 18) + (p * (exitY - (startY - 18)));
-          scale = 1.00 + (sin(p * pi) * 0.22);
-          vibration = sin(p * 20 * pi) * (1.5 * (1.0 - p));
-        }
-
-        posX += vibration;
-        // Diagonal flight angle matching Photo 2 (~ -34 degrees)
-        const double rocketAngle = -0.58;
-
-        return Stack(
-          children: [
-            // Billowing Volumetric Smoke Plume & Glowing Embers Trailing Down-Left
-            if (val >= 0.08)
-              _buildRocketSmokePlume(
-                tailX: posX + 38,
-                tailY: posY + 115,
-                progress: val,
-              ),
-
-            // Dual Thruster Fire Jets (Intense White Core + Cyan/Magenta Outer Cone)
-            if (val >= 0.05)
-              Positioned(
-                left: posX + 26,
-                top: posY + 106,
-                child: IgnorePointer(
-                  child: Transform.rotate(
-                    angle: rocketAngle,
-                    child: _buildDualRocketThrusterFlames(progress: val),
-                  ),
-                ),
-              ),
-
-            // Anamorphic Horizontal Cyan Lens Flare Across Thrusters
-            if (val >= 0.10)
-              Positioned(
-                left: posX - 10,
-                top: posY + 104,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: (sin(val * 24 * pi).abs() * 0.35 + 0.65).clamp(0.0, 1.0),
-                    child: Container(
-                      width: 120,
-                      height: 4,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.transparent,
-                            Color(0x8800E5FF),
-                            Colors.white,
-                            Color(0x8800E5FF),
-                            Colors.transparent,
-                          ],
-                          stops: [0.0, 0.25, 0.50, 0.75, 1.0],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-            // Photorealistic Rocket with Fuselage Metallic Sheen Sweep
-            Positioned(
-              left: posX,
-              top: posY,
-              child: IgnorePointer(
-                child: Transform.scale(
-                  scale: scale,
-                  child: Transform.rotate(
-                    angle: rocketAngle,
-                    child: SizedBox(
-                      width: 160,
-                      height: 160,
-                      child: _buildRealisticSpecularSheen(
-                        progress: val,
-                        lightColor: const Color(0xFFCFD8DC),
-                        child: Image.asset(
-                          AppAssets.giftRocket,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// Dual realistic rocket thruster plumes matching Photo 2
-  Widget _buildDualRocketThrusterFlames({required double progress}) {
-    final flicker = (sin(progress * 38 * pi).abs() * 0.25 + 0.75);
-
-    Widget singleThruster() {
-      return Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          // Outer Magenta / Pink Flare Envelope
-          Container(
-            width: 32,
-            height: 95 * flicker,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFFFF4081),
-                  Color(0xFFE040FB),
-                  Color(0x887C4DFF),
-                  Colors.transparent,
-                ],
-                stops: [0.0, 0.30, 0.65, 1.0],
-              ),
-            ),
-          ),
-          // Inner Electric Cyan / Blue Cone
-          Container(
-            width: 20,
-            height: 70 * flicker,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white,
-                  Color(0xFF00E5FF),
-                  Color(0xFF00B0FF),
-                  Colors.transparent,
-                ],
-                stops: [0.0, 0.35, 0.70, 1.0],
-              ),
-            ),
-          ),
-          // Intense Blazing White Core Jet
-          Container(
-            width: 10,
-            height: 40 * flicker,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: Colors.white,
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0xFF00E5FF),
-                  blurRadius: 12,
-                  spreadRadius: 2,
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    }
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        singleThruster(),
-        const SizedBox(width: 8),
-        singleThruster(),
-      ],
-    );
-  }
-
-  /// Volumetric billowy smoke clouds & hot glowing embers trailing the rocket
-  Widget _buildRocketSmokePlume({
-    required double tailX,
-    required double tailY,
-    required double progress,
-  }) {
-    return Stack(
-      children: [
-        // Billowing soft circular clouds expanding backwards
-        ...List.generate(7, (i) {
-          final cloudAge = ((progress * 2.2) + (i * 0.14)) % 1.0;
-          final puffX = tailX - (cloudAge * 95) + (sin(cloudAge * 4 * pi) * 12);
-          final puffY = tailY + (cloudAge * 115);
-          final puffSize = 28.0 + (cloudAge * 48.0);
-          final puffOpacity = (1.0 - cloudAge).clamp(0.0, 0.75);
-
-          return Positioned(
-            left: puffX - (puffSize / 2),
-            top: puffY - (puffSize / 2),
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: puffOpacity,
-                child: Container(
-                  width: puffSize,
-                  height: puffSize,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        const Color(0xFF90CAF9).withOpacity(0.65), // soft cyan-lavender smoke
-                        const Color(0xFF5C6BC0).withOpacity(0.35),
-                        Colors.transparent,
-                      ],
-                      stops: const [0.0, 0.50, 1.0],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-
-        // Glowing Fiery Sparks / Embers Inside the Smoke
-        ...List.generate(6, (i) {
-          final emberP = ((progress * 3.0) + (i * 0.18)) % 1.0;
-          final emberX = tailX - (emberP * 80) + (sin(emberP * 6 * pi) * 16);
-          final emberY = tailY + (emberP * 95);
-          final emberColor = i % 2 == 0 ? const Color(0xFFFF80AB) : const Color(0xFF00E5FF);
-
-          return Positioned(
-            left: emberX,
-            top: emberY,
-            child: IgnorePointer(
-              child: Opacity(
-                opacity: (sin(emberP * pi)).clamp(0.0, 1.0),
-                child: Container(
-                  width: 4.5,
-                  height: 4.5,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: emberColor,
-                        blurRadius: 6,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
-  }
-
-  // ===========================================================================
-  // 14. 🪽 ANGEL WINGS
-  // ===========================================================================
-  Widget _buildAngelWingsAnimation() {
-    return AnimatedBuilder(
-      animation: _wingsController,
-      builder: (context, child) {
-        final val = _wingsController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 240) / 2;
-        final double centerY = screenHeight * 0.23;
-
-        double scale;
-        double flapFactor;
-        double opacity = 1.0;
-
-        if (val < 0.25) {
-          final p = Curves.easeOutCubic.transform(val / 0.25);
-          scale = 0.70 + (p * 0.30);
-          flapFactor = 0.20 + (p * 0.80);
-          opacity = (p / 0.12).clamp(0.0, 1.0);
-        } else if (val < 0.75) {
-          final p = (val - 0.25) / 0.50;
-          scale = 1.00 + (sin(p * pi) * 0.18);
-          flapFactor = 0.88 + (sin(p * 4 * pi).abs() * 0.12);
-        } else {
-          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
-          scale = 1.00 - (p * 0.35);
-          flapFactor = 1.00 - (p * 0.80);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
-        }
-
-        final double airflowSway = sin(val * 2 * pi) * 0.025;
-        final double naturalElevation = sin(val * 2 * pi) * 6;
-        final double posY = centerY + naturalElevation;
-
-        return Stack(
-          children: [
-            _buildRealisticGroundShadow(
-              centerX: centerX + 120,
-              groundY: posY + 160,
-              scale: scale,
-              elevation: naturalElevation,
-              width: 220,
-            ),
-            Positioned(
-              left: centerX,
-              top: posY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0012)
-                        ..rotateZ(airflowSway)
-                        ..scale(flapFactor, 1.0, 1.0),
-                      child: SizedBox(
-                        width: 240,
-                        height: 200,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFFFF9C4),
-                          child: Image.asset(
-                            AppAssets.giftAngelWings,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
-  // 4. 🌹 ROSE
-  // ===========================================================================
-  Widget _buildRoseAnimation() {
-    return AnimatedBuilder(
-      animation: _roseController,
-      builder: (context, child) {
-        final val = _roseController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 190) / 2;
-        final double startY = screenHeight * 0.42;
-        final double targetY = screenHeight * 0.23;
-        final double exitY = screenHeight * 0.44;
-
-        double posY;
-        double scale;
-        double opacity = 1.0;
-
-        if (val < 0.28) {
-          final p = Curves.easeOutCubic.transform(val / 0.28);
-          posY = startY - (p * (startY - targetY));
-          scale = 0.88 + (p * 0.12);
-        } else if (val < 0.75) {
-          final p = (val - 0.28) / 0.47;
-          posY = targetY + (sin(p * 2 * pi) * 4);
-          scale = 1.00 + (sin(p * pi) * 0.18);
-        } else {
-          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
-          posY = targetY + (p * (exitY - targetY));
-          scale = 1.00 - (p * 0.15);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
-        }
-
-        final double breezeSway = sin(val * 4 * pi) * 0.03;
-
-        return Stack(
-          children: [
-            _buildRealisticGroundShadow(
-              centerX: centerX + 95,
-              groundY: posY + 160,
-              scale: scale,
-              width: 170,
-            ),
-            if (val >= 0.35 && val <= 0.85)
-              _buildFallingPetals(
-                centerX: centerX + 95,
-                centerY: posY + 85,
-                progress: val,
-                opacity: opacity,
-              ),
-            Positioned(
-              left: centerX,
-              top: posY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform.rotate(
-                      angle: breezeSway,
-                      child: SizedBox(
-                        width: 190,
-                        height: 190,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFFF80AB),
-                          child: Image.asset(
-                            AppAssets.giftRose,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
-  // 8. 👑 CROWN
-  // ===========================================================================
-  Widget _buildCrownAnimation() {
-    return AnimatedBuilder(
-      animation: _crownController,
-      builder: (context, child) {
-        final val = _crownController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 210) / 2;
-        final double startY = screenHeight * 0.42;
-        final double targetY = screenHeight * 0.23;
-        final double exitY = screenHeight * 0.44;
-
-        double posY;
-        double scale;
-        double opacity = 1.0;
-
-        if (val < 0.28) {
-          final p = Curves.easeOutCubic.transform(val / 0.28);
-          posY = startY - (p * (startY - targetY));
-          scale = 0.88 + (p * 0.12);
-        } else if (val < 0.75) {
-          final p = (val - 0.28) / 0.47;
-          posY = targetY + (sin(p * 2 * pi) * 3);
-          scale = 1.00 + (sin(p * pi) * 0.20);
-        } else {
-          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
-          posY = targetY + (p * (exitY - targetY));
-          scale = 1.00 - (p * 0.15);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
-        }
-
-        final double rotY = sin(val * 2 * pi) * 0.22;
-        final double rotX = -0.05 + sin(val * 2 * pi) * 0.02;
-
-        return Stack(
-          children: [
-            _buildRealisticGroundShadow(
-              centerX: centerX + 105,
-              groundY: posY + 165,
-              scale: scale,
-              elevation: (targetY - posY).abs(),
-              width: 190,
-            ),
-            _buildRealisticStudioAura(
-              centerX: centerX + 105,
-              centerY: posY + 90,
-              scale: scale,
-              color: const Color(0xFFFFD54F),
-              radius: 200,
-              opacity: 0.25 * opacity,
-            ),
-            if (val >= 0.15 && val <= 0.85) ...[
-              _buildSparkleGlint(
-                x: centerX + 55,
-                y: posY + 70,
-                progress: (val * 4.0) % 1.0,
-                color: const Color(0xFFFFD54F),
-              ),
-              _buildSparkleGlint(
-                x: centerX + 145,
-                y: posY + 65,
-                progress: ((val * 4.0) + 0.5) % 1.0,
-                color: const Color(0xFF00E5FF),
-              ),
-            ],
-            Positioned(
-              left: centerX,
-              top: posY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0014)
-                        ..rotateY(rotY)
-                        ..rotateX(rotX),
-                      child: SizedBox(
-                        width: 210,
-                        height: 200,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFFFD54F),
-                          child: Image.asset(
-                            AppAssets.giftCrown,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
-  // 7. 💎 DIAMOND
-  // ===========================================================================
-  Widget _buildDiamondAnimation() {
-    return AnimatedBuilder(
-      animation: _diamondController,
-      builder: (context, child) {
-        final val = _diamondController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 200) / 2;
-        final double startY = screenHeight * 0.42;
-        final double targetY = screenHeight * 0.23;
-        final double exitY = screenHeight * 0.44;
-
-        double posY;
-        double scale;
-        double opacity = 1.0;
-
-        if (val < 0.28) {
-          final p = Curves.easeOutCubic.transform(val / 0.28);
-          posY = startY - (p * (startY - targetY));
-          scale = 0.88 + (p * 0.12);
-        } else if (val < 0.75) {
-          final p = (val - 0.28) / 0.47;
-          posY = targetY + (sin(p * 2 * pi) * 4);
-          scale = 1.00 + (sin(p * pi) * 0.22);
-        } else {
-          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
-          posY = targetY + (p * (exitY - targetY));
-          scale = 1.00 - (p * 0.15);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
-        }
-
-        final double rotY = sin(val * 2 * pi) * 0.35;
-        final double rotZ = sin(val * 4 * pi) * 0.04;
-
-        return Stack(
-          children: [
-            _buildRealisticGroundShadow(
-              centerX: centerX + 100,
-              groundY: posY + 160,
-              scale: scale,
-              elevation: (targetY - posY).abs(),
-              width: 170,
-            ),
-            _buildRealisticStudioAura(
-              centerX: centerX + 100,
-              centerY: posY + 90,
-              scale: scale,
-              color: const Color(0xFF00E5FF),
-              radius: 220,
-              opacity: 0.30 * opacity,
-            ),
-            if (val >= 0.18 && val <= 0.85) ...[
-              _buildSparkleGlint(
-                x: centerX + 70,
-                y: posY + 60,
-                progress: (val * 5.0) % 1.0,
-                color: Colors.white,
-              ),
-              _buildSparkleGlint(
-                x: centerX + 120,
-                y: posY + 95,
-                progress: ((val * 5.0) + 0.4) % 1.0,
-                color: const Color(0xFF80D8FF),
-              ),
-            ],
-            Positioned(
-              left: centerX,
-              top: posY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0014)
-                        ..rotateY(rotY)
-                        ..rotateZ(rotZ),
-                      child: SizedBox(
-                        width: 200,
-                        height: 200,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFE0F7FA),
-                          child: Image.asset(
-                            AppAssets.giftDiamond,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
   // 9. 🎂 BIRTHDAY CAKE
   // ===========================================================================
   Widget _buildCakeAnimation() {
@@ -1631,13 +1599,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               scale: scale,
               width: 190,
             ),
-            if (val >= 0.30 && val <= 0.85)
-              _buildCelebrationConfetti(
-                centerX: centerX + 100,
-                centerY: posY + 75,
-                progress: val,
-                opacity: opacity,
-              ),
             if (val >= 0.10 && val <= 0.88)
               ...List.generate(3, (i) {
                 final flameX = centerX + 62 + (i * 38.0);
@@ -1830,13 +1791,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               scale: scale,
               width: 170,
             ),
-            if (val >= 0.25 && val <= 0.85)
-              _buildKittyFloatingHearts(
-                centerX: centerX + 95,
-                centerY: posY + 80,
-                progress: val,
-                opacity: opacity,
-              ),
             Positioned(
               left: centerX,
               top: posY,
@@ -2076,13 +2030,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               scale: scale,
               width: 180,
             ),
-            if (val >= 0.25 && val <= 0.85)
-              _buildFallingPetals(
-                centerX: centerX + 105,
-                centerY: posY + 85,
-                progress: val,
-                opacity: opacity,
-              ),
             Positioned(
               left: centerX,
               top: posY,
@@ -2205,281 +2152,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   }
 
   // ===========================================================================
-  // 12. 🏰 CASTLE
-  // ===========================================================================
-  Widget _buildCastleAnimation() {
-    return AnimatedBuilder(
-      animation: _castleController,
-      builder: (context, child) {
-        final val = _castleController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 230) / 2;
-        final double startY = screenHeight * 0.42;
-        final double targetY = screenHeight * 0.23;
-        final double exitY = screenHeight * 0.38;
-
-        double posY;
-        double scale;
-        double opacity = 1.0;
-
-        if (val < 0.30) {
-          final p = Curves.easeOutCubic.transform(val / 0.30);
-          posY = startY - (p * (startY - targetY));
-          scale = 0.88 + (p * 0.12);
-        } else if (val < 0.75) {
-          final p = (val - 0.30) / 0.45;
-          posY = targetY;
-          scale = 1.00 + (sin(p * pi) * 0.18);
-        } else {
-          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
-          posY = targetY + (p * (exitY - targetY));
-          scale = 1.00 - (p * 0.25);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
-        }
-
-        return Stack(
-          children: [
-            Positioned(
-              left: centerX - 25,
-              top: posY + 160,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: (0.50 * opacity).clamp(0.0, 0.50),
-                  child: Container(
-                    width: 280,
-                    height: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25),
-                      gradient: RadialGradient(
-                        colors: [
-                          Colors.white.withOpacity(0.65),
-                          const Color(0xFFB0BEC5).withOpacity(0.35),
-                          Colors.transparent,
-                        ],
-                        stops: const [0.0, 0.50, 1.0],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            if (val >= 0.20)
-              _buildRealisticStudioAura(
-                centerX: centerX + 115,
-                centerY: posY + 115,
-                scale: scale,
-                color: const Color(0xFFFFD54F),
-                radius: 200,
-                opacity: (0.22 * opacity).clamp(0.0, 0.22),
-              ),
-            Positioned(
-              left: centerX,
-              top: posY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: SizedBox(
-                      width: 230,
-                      height: 230,
-                      child: _buildRealisticSpecularSheen(
-                        progress: val,
-                        lightColor: const Color(0xFFFFF9C4),
-                        child: Image.asset(
-                          AppAssets.giftCastle,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
-  // BONUS: GOLDEN HORSE
-  // ===========================================================================
-  Widget _buildGoldenHorseAnimation() {
-    return AnimatedBuilder(
-      animation: _horseController,
-      builder: (context, child) {
-        final val = _horseController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 230) / 2;
-        final double centerY = screenHeight * 0.23;
-
-        final double scale = 0.94 + (sin(val * pi) * 0.14);
-        final double tiltAngle = sin(val * 2 * pi) * 0.03;
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
-
-        return Stack(
-          children: [
-            _buildRealisticGroundShadow(
-              centerX: centerX + 115,
-              groundY: centerY + 175,
-              scale: scale,
-              width: 200,
-            ),
-            Positioned(
-              left: centerX,
-              top: centerY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform.rotate(
-                      angle: tiltAngle,
-                      child: SizedBox(
-                        width: 230,
-                        height: 210,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFFFD54F),
-                          child: Image.asset(
-                            AppAssets.giftGoldenHorse,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
-  // BONUS: OCEAN WHALE
-  // ===========================================================================
-  Widget _buildOceanWhaleAnimation() {
-    return AnimatedBuilder(
-      animation: _whaleController,
-      builder: (context, child) {
-        final val = _whaleController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 240) / 2;
-        final double centerY = screenHeight * 0.23;
-
-        final double scale = 0.95 + (sin(val * pi) * 0.12);
-        final double waveBob = sin(val * 4 * pi) * 5;
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
-
-        return Stack(
-          children: [
-            _buildRealisticWaterRipples(
-              left: centerX,
-              top: centerY + 175,
-              width: 240,
-              progress: val,
-              opacity: 0.60 * opacity,
-            ),
-            Positioned(
-              left: centerX,
-              top: centerY + waveBob,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: SizedBox(
-                      width: 240,
-                      height: 210,
-                      child: _buildRealisticSpecularSheen(
-                        progress: val,
-                        lightColor: const Color(0xFF80D8FF),
-                        child: Image.asset(
-                          AppAssets.giftOceanWhale,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
-  // BONUS: ANGEL VEHICLE
-  // ===========================================================================
-  Widget _buildAngelVehicleAnimation() {
-    return AnimatedBuilder(
-      animation: _angelVehicleController,
-      builder: (context, child) {
-        final val = _angelVehicleController.value;
-        final screenWidth = MediaQuery.sizeOf(context).width;
-        final screenHeight = MediaQuery.sizeOf(context).height;
-
-        final double centerX = (screenWidth - 240) / 2;
-        final double centerY = screenHeight * 0.23;
-
-        final double scale = 0.94 + (sin(val * pi) * 0.14);
-        final double sway = sin(val * 2 * pi) * 0.03;
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
-
-        return Stack(
-          children: [
-            _buildRealisticGroundShadow(
-              centerX: centerX + 120,
-              groundY: centerY + 175,
-              scale: scale,
-              width: 220,
-            ),
-            Positioned(
-              left: centerX,
-              top: centerY,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform.rotate(
-                      angle: sway,
-                      child: SizedBox(
-                        width: 240,
-                        height: 210,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFFFF9C4),
-                          child: Image.asset(
-                            AppAssets.giftAngelVehicle,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // ===========================================================================
   // STANDARD / GENERIC GIFT FALLBACK
   // ===========================================================================
   Widget _buildStandardGiftAnimation() {
@@ -2542,7 +2214,152 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   // PROCEDURAL VFX & REALISTIC SHADING HELPERS
   // ===========================================================================
 
-  /// Soft Natural Headlight Glow with Radial Falloff (ZERO rectangular edges!)
+  Widget _buildDualRocketThrusterFlames({required double progress}) {
+    final flicker = (sin(progress * 38 * pi).abs() * 0.25 + 0.75);
+
+    Widget singleThruster() {
+      return Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Container(
+            width: 32,
+            height: 95 * flicker,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Color(0xFFFF4081),
+                  Color(0xFFE040FB),
+                  Color(0x887C4DFF),
+                  Colors.transparent,
+                ],
+                stops: [0.0, 0.30, 0.65, 1.0],
+              ),
+            ),
+          ),
+          Container(
+            width: 20,
+            height: 70 * flicker,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white,
+                  Color(0xFF00E5FF),
+                  Color(0xFF00B0FF),
+                  Colors.transparent,
+                ],
+                stops: [0.0, 0.35, 0.70, 1.0],
+              ),
+            ),
+          ),
+          Container(
+            width: 10,
+            height: 40 * flicker,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5),
+              color: Colors.white,
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0xFF00E5FF),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        singleThruster(),
+        const SizedBox(width: 8),
+        singleThruster(),
+      ],
+    );
+  }
+
+  Widget _buildRocketSmokePlume({
+    required double tailX,
+    required double tailY,
+    required double progress,
+  }) {
+    return Stack(
+      children: [
+        ...List.generate(7, (i) {
+          final cloudAge = ((progress * 2.2) + (i * 0.14)) % 1.0;
+          final puffX = tailX - (cloudAge * 95) + (sin(cloudAge * 4 * pi) * 12);
+          final puffY = tailY + (cloudAge * 115);
+          final puffSize = 28.0 + (cloudAge * 48.0);
+          final puffOpacity = (1.0 - cloudAge).clamp(0.0, 0.75);
+
+          return Positioned(
+            left: puffX - (puffSize / 2),
+            top: puffY - (puffSize / 2),
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: puffOpacity,
+                child: Container(
+                  width: puffSize,
+                  height: puffSize,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        const Color(0xFF90CAF9).withOpacity(0.65),
+                        const Color(0xFF5C6BC0).withOpacity(0.35),
+                        Colors.transparent,
+                      ],
+                      stops: const [0.0, 0.50, 1.0],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+        ...List.generate(6, (i) {
+          final emberP = ((progress * 3.0) + (i * 0.18)) % 1.0;
+          final emberX = tailX - (emberP * 80) + (sin(emberP * 6 * pi) * 16);
+          final emberY = tailY + (emberP * 95);
+          final emberColor = i % 2 == 0 ? const Color(0xFFFF80AB) : const Color(0xFF00E5FF);
+
+          return Positioned(
+            left: emberX,
+            top: emberY,
+            child: IgnorePointer(
+              child: Opacity(
+                opacity: (sin(emberP * pi)).clamp(0.0, 1.0),
+                child: Container(
+                  width: 4.5,
+                  height: 4.5,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: emberColor,
+                        blurRadius: 6,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
   Widget _buildRealisticHeadlightGlow({
     required double left,
     required double top,
@@ -2577,7 +2394,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Photorealistic gemstone light glint
   Widget _buildSparkleGlint({
     required double x,
     required double y,
@@ -2632,8 +2448,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Sweeps a realistic studio specular highlight reflection across any surface
-  /// Uses BlendMode.srcATop so gradient NEVER bleeds over transparent bounds!
   Widget _buildRealisticSpecularSheen({
     required Widget child,
     required double progress,
@@ -2660,7 +2474,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Soft ambient occlusion / contact shadow on the ground beneath the object
   Widget _buildRealisticGroundShadow({
     required double centerX,
     required double groundY,
@@ -2697,7 +2510,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Subtle studio backlight / depth-of-field volumetric aura
   Widget _buildRealisticStudioAura({
     required double centerX,
     required double centerY,
@@ -2732,7 +2544,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Realistic water ripples beneath maritime objects (Yacht, Whale)
   Widget _buildRealisticWaterRipples({
     required double left,
     required double top,
@@ -2766,7 +2577,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Subtle realistic tire smoke & road sparks for vehicle drift
   Widget _buildSubtleTireDriftVfx({
     required double left,
     required double top,
@@ -2819,142 +2629,6 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
     );
   }
 
-  /// Gentle falling flower petals drifting around bouquet
-  Widget _buildFallingPetals({
-    required double centerX,
-    required double centerY,
-    required double progress,
-    required double opacity,
-  }) {
-    if (opacity <= 0.0) return const SizedBox.shrink();
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: Opacity(
-          opacity: opacity.clamp(0.0, 0.85),
-          child: Stack(
-            children: List.generate(5, (i) {
-              final driftP = ((progress * 1.5) + (i * 0.18)) % 1.0;
-              final petalX = centerX - 60 + (i * 32.0) + (sin(driftP * 4 * pi) * 16);
-              final petalY = centerY - 30 + (driftP * 180);
-              final rot = driftP * 4 * pi;
-
-              return Positioned(
-                left: petalX,
-                top: petalY,
-                child: Transform.rotate(
-                  angle: rot,
-                  child: Container(
-                    width: 10,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.elliptical(5, 7)),
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFF80AB), Color(0xFFFF4081)],
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFFF4081).withOpacity(0.35),
-                          blurRadius: 4,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Subtle celebration confetti flakes drifting around Birthday Cake
-  Widget _buildCelebrationConfetti({
-    required double centerX,
-    required double centerY,
-    required double progress,
-    required double opacity,
-  }) {
-    if (opacity <= 0.0) return const SizedBox.shrink();
-    final colors = [
-      const Color(0xFFFFD700),
-      const Color(0xFFFF4081),
-      const Color(0xFF00E5FF),
-      const Color(0xFF76FF03),
-      const Color(0xFFE040FB),
-    ];
-
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: Opacity(
-          opacity: opacity.clamp(0.0, 0.80),
-          child: Stack(
-            children: List.generate(7, (i) {
-              final driftP = ((progress * 1.6) + (i * 0.14)) % 1.0;
-              final confX = centerX - 70 + (i * 26.0) + (sin(driftP * 3 * pi) * 12);
-              final confY = centerY - 40 + (driftP * 190);
-              final rot = driftP * 5 * pi;
-
-              return Positioned(
-                left: confX,
-                top: confY,
-                child: Transform.rotate(
-                  angle: rot,
-                  child: Container(
-                    width: 6,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(2),
-                      color: colors[i % colors.length],
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Small natural luminous heart elements around Kitty
-  Widget _buildKittyFloatingHearts({
-    required double centerX,
-    required double centerY,
-    required double progress,
-    required double opacity,
-  }) {
-    if (opacity <= 0.0) return const SizedBox.shrink();
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: Opacity(
-          opacity: opacity.clamp(0.0, 0.75),
-          child: Stack(
-            children: List.generate(3, (i) {
-              final p = ((progress * 1.3) + (i * 0.30)) % 1.0;
-              final heartX = centerX + (i == 0 ? -45.0 : (i == 1 ? 50.0 : 0.0)) + (sin(p * 2 * pi) * 8);
-              final heartY = centerY + 10 - (p * 70);
-
-              return Positioned(
-                left: heartX,
-                top: heartY,
-                child: Opacity(
-                  opacity: (sin(p * pi)).clamp(0.0, 1.0),
-                  child: const Icon(
-                    Icons.favorite,
-                    size: 15,
-                    color: Color(0xFFFF80AB),
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Realistic airplane traveling around curved orbit of World Tour globe
   Widget _buildAirplaneOrbit({
     required double centerX,
     required double centerY,
@@ -2998,17 +2672,158 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 }
 
 // =============================================================================
-// CUSTOM PAINTERS FOR PHOTOREALISTIC ATMOSPHERIC BACKDROPS
+// FULL-SCREEN CINEMATIC ENVIRONMENTAL CUSTOM PAINTERS (Matching Poster Image 2!)
 // =============================================================================
 
-/// Realistic Space Starfield & Nebulae Painter (Directly reproduces Photo 2 reference!)
-class _SpaceStarfieldPainter extends CustomPainter {
+/// 1. 🌹 Flower Chariot & Rose: Full-Screen 36+ Tumbling 3D Petal Rain & Fireflies
+class _FullPetalRainPainter extends CustomPainter {
   final double progress;
 
-  _SpaceStarfieldPainter({required this.progress});
+  _FullPetalRainPainter({required this.progress});
 
-  // 95 Deterministic Stars
-  static final List<_StarData> _stars = List.generate(95, (i) {
+  static final List<_PetalData> _petals = List.generate(36, (i) {
+    final rand = Random(i * 123 + 45);
+    return _PetalData(
+      startX: rand.nextDouble(),
+      speed: 0.8 + (rand.nextDouble() * 0.8),
+      size: 14.0 + (rand.nextDouble() * 14.0),
+      swayFreq: 2.0 + (rand.nextDouble() * 3.0),
+      swayAmp: 20.0 + (rand.nextDouble() * 30.0),
+      rotSpeed: 2.0 + (rand.nextDouble() * 4.0),
+      phase: rand.nextDouble() * 2 * pi,
+      color: _petalColors[i % _petalColors.length],
+    );
+  });
+
+  static const List<Color> _petalColors = [
+    Color(0xFFFF1744), // Crimson
+    Color(0xFFFF4081), // Rose pink
+    Color(0xFFE91E63), // Magenta
+    Color(0xFFFF80AB), // Soft pink
+    Color(0xFFC2185B), // Deep velvet rose
+    Color(0xFFFFD54F), // Golden stardust flake
+  ];
+
+  static final List<_FireflyData> _fireflies = List.generate(24, (i) {
+    final rand = Random(i * 456 + 78);
+    return _FireflyData(
+      x: rand.nextDouble(),
+      yStart: rand.nextDouble(),
+      speed: 0.4 + (rand.nextDouble() * 0.6),
+      size: 2.5 + (rand.nextDouble() * 3.0),
+      blinkSpeed: 3.0 + (rand.nextDouble() * 5.0),
+    );
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. Romantic warm glow at center
+    final glowPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0.0, -0.45),
+        radius: 0.95,
+        colors: [
+          const Color(0x66FF4081),
+          const Color(0x28FFA000),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), glowPaint);
+
+    // 2. Rising Golden Stardust Fireflies
+    for (final f in _fireflies) {
+      final curY = (f.yStart * size.height - (progress * f.speed * size.height)) % size.height;
+      final curX = (f.x * size.width) + (sin(progress * 4 * pi + f.x * 10) * 15);
+      final alpha = (sin((progress * f.blinkSpeed * 2 * pi) + f.x * 10).abs() * 0.6 + 0.4).clamp(0.0, 1.0);
+
+      final flyPaint = Paint()
+        ..color = const Color(0xFFFFD54F).withOpacity(alpha)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+      canvas.drawCircle(Offset(curX, curY), f.size / 2, flyPaint);
+    }
+
+    // 3. Falling & 3D Tumbling Rose Petals across the whole screen
+    for (final p in _petals) {
+      final curY = ((p.speed * progress * size.height * 1.4) + (p.phase * 100)) % (size.height + 60) - 30;
+      final curX = (p.startX * size.width) + (sin((progress * p.swayFreq * 2 * pi) + p.phase) * p.swayAmp);
+      final rot = (progress * p.rotSpeed * 2 * pi) + p.phase;
+      final tiltScaleX = cos(rot * 1.5).abs().clamp(0.2, 1.0);
+
+      canvas.save();
+      canvas.translate(curX, curY);
+      canvas.rotate(rot);
+      canvas.scale(tiltScaleX, 1.0);
+
+      final petalPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            p.color,
+            p.color.withOpacity(0.85),
+            const Color(0x88000000),
+          ],
+        ).createShader(Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 1.4));
+
+      final path = Path()
+        ..moveTo(0, -p.size * 0.7)
+        ..cubicTo(p.size * 0.6, -p.size * 0.5, p.size * 0.5, p.size * 0.5, 0, p.size * 0.7)
+        ..cubicTo(-p.size * 0.5, p.size * 0.5, -p.size * 0.6, -p.size * 0.5, 0, -p.size * 0.7);
+
+      canvas.drawPath(path, petalPaint);
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullPetalRainPainter oldDelegate) => true;
+}
+
+class _PetalData {
+  final double startX;
+  final double speed;
+  final double size;
+  final double swayFreq;
+  final double swayAmp;
+  final double rotSpeed;
+  final double phase;
+  final Color color;
+
+  const _PetalData({
+    required this.startX,
+    required this.speed,
+    required this.size,
+    required this.swayFreq,
+    required this.swayAmp,
+    required this.rotSpeed,
+    required this.phase,
+    required this.color,
+  });
+}
+
+class _FireflyData {
+  final double x;
+  final double yStart;
+  final double speed;
+  final double size;
+  final double blinkSpeed;
+
+  const _FireflyData({
+    required this.x,
+    required this.yStart,
+    required this.speed,
+    required this.size,
+    required this.blinkSpeed,
+  });
+}
+
+/// 2. 🚀 Galaxy Rocket: Full-Screen Cosmic Galaxy, Planet, Nebulae & 120+ Stars
+class _FullSpaceGalaxyPainter extends CustomPainter {
+  final double progress;
+
+  _FullSpaceGalaxyPainter({required this.progress});
+
+  static final List<_StarData> _stars = List.generate(120, (i) {
     final rand = Random(i * 997 + 13);
     return _StarData(
       x: rand.nextDouble(),
@@ -3017,7 +2832,7 @@ class _SpaceStarfieldPainter extends CustomPainter {
       baseAlpha: 0.35 + (rand.nextDouble() * 0.65),
       speed: 1.5 + (rand.nextDouble() * 4.5),
       phase: rand.nextDouble() * 2 * pi,
-      hasCrossFlare: i < 14, // Bright hero stars have 4-point anamorphic diffraction spike
+      hasCrossFlare: i < 18,
       isColorTinted: rand.nextDouble() < 0.25,
       tintColor: rand.nextBool() ? const Color(0xFF80D8FF) : const Color(0xFFFF80AB),
     );
@@ -3025,57 +2840,87 @@ class _SpaceStarfieldPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // 1. Cosmic Deep Nebulae (Cyan & Deep Purple clouds)
+    // 1. Deep Space Black/Navy Void
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0xF2030612),
+    );
+
+    // 2. Cosmic Nebulae
     final nebulaPaint1 = Paint()
-      ..shader = const RadialGradient(
+      ..shader = RadialGradient(
         colors: [
-          Color(0x444A148C),
-          Color(0x18311B92),
+          const Color(0x444A148C),
+          const Color(0x18311B92),
           Colors.transparent,
         ],
       ).createShader(Rect.fromCircle(
         center: Offset(size.width * 0.75, size.height * 0.25),
-        radius: size.width * 0.55,
+        radius: size.width * 0.65,
       ));
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), nebulaPaint1);
 
     final nebulaPaint2 = Paint()
-      ..shader = const RadialGradient(
+      ..shader = RadialGradient(
         colors: [
-          Color(0x3500B0FF),
-          Color(0x100D47A1),
+          const Color(0x3500B0FF),
+          const Color(0x100D47A1),
           Colors.transparent,
         ],
       ).createShader(Rect.fromCircle(
         center: Offset(size.width * 0.25, size.height * 0.45),
-        radius: size.width * 0.48,
+        radius: size.width * 0.55,
       ));
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), nebulaPaint2);
 
-    // 2. Stars with Twinkling & Parallax Drift
+    // 3. Distant Glowing Planet Orb with Atmospheric Rim in upper right (matching Image 2)
+    final planetCenter = Offset(size.width * 0.88, size.height * 0.16);
+    const planetRadius = 32.0;
+    canvas.drawCircle(
+      planetCenter,
+      planetRadius + 6,
+      Paint()
+        ..color = const Color(0x4400E5FF)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+    );
+    canvas.drawCircle(
+      planetCenter,
+      planetRadius,
+      Paint()
+        ..shader = const RadialGradient(
+          center: Alignment(-0.4, -0.4),
+          colors: [
+            Color(0xFF80D8FF),
+            Color(0xFF1565C0),
+            Color(0xFF0D47A1),
+            Color(0xFF000A1F),
+          ],
+          stops: [0.0, 0.4, 0.75, 1.0],
+        ).createShader(Rect.fromCircle(center: planetCenter, radius: planetRadius)),
+    );
+
+    // 4. Stars with Twinkling & Parallax Drift
     for (final star in _stars) {
       final shimmer = 0.65 + 0.35 * sin((progress * star.speed * 2 * pi) + star.phase);
       final alpha = (star.baseAlpha * shimmer).clamp(0.0, 1.0);
       final color = (star.isColorTinted ? star.tintColor : Colors.white).withOpacity(alpha);
 
-      final sx = (star.x * size.width - (progress * 18.0)) % size.width;
-      final sy = (star.y * size.height + (progress * 28.0)) % size.height;
+      final sx = (star.x * size.width - (progress * 24.0)) % size.width;
+      final sy = (star.y * size.height + (progress * 38.0)) % size.height;
 
       final paint = Paint()
         ..color = color
         ..style = PaintingStyle.fill;
 
-      // Draw Star Core
       canvas.drawCircle(Offset(sx, sy), star.size / 2, paint);
 
-      // Draw 4-point cross diffraction spike on hero stars
       if (star.hasCrossFlare && alpha > 0.6) {
         final spikePaint = Paint()
-          ..color = color.withOpacity(alpha * 0.75)
-          ..strokeWidth = 0.8
+          ..color = color.withOpacity(alpha * 0.80)
+          ..strokeWidth = 0.9
           ..style = PaintingStyle.stroke;
 
-        final spikeLen = star.size * 3.5;
+        final spikeLen = star.size * 4.0;
         canvas.drawLine(Offset(sx - spikeLen, sy), Offset(sx + spikeLen, sy), spikePaint);
         canvas.drawLine(Offset(sx, sy - spikeLen), Offset(sx, sy + spikeLen), spikePaint);
       }
@@ -3083,7 +2928,7 @@ class _SpaceStarfieldPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _SpaceStarfieldPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _FullSpaceGalaxyPainter oldDelegate) => true;
 }
 
 class _StarData {
@@ -3110,27 +2955,255 @@ class _StarData {
   });
 }
 
-/// High-speed Highway Motion Streaks for Super Car
-class _HighwaySpeedStreaksPainter extends CustomPainter {
+/// 3. 👑 Royal Crown: Full-Screen Golden Pedestal, Vertical God-Rays & Sparkle Rain
+class _FullRoyalGoldenShowerPainter extends CustomPainter {
   final double progress;
 
-  _HighwaySpeedStreaksPainter({required this.progress});
+  _FullRoyalGoldenShowerPainter({required this.progress});
 
-  static final List<_StreakData> _streaks = List.generate(10, (i) {
-    final rand = Random(i * 333 + 7);
-    return _StreakData(
-      yNorm: 0.14 + (rand.nextDouble() * 0.20),
-      length: 80.0 + (rand.nextDouble() * 140.0),
-      speed: 2.2 + (rand.nextDouble() * 3.0),
-      color: i % 3 == 0
-          ? const Color(0xFFFF9100)
-          : (i % 3 == 1 ? const Color(0xFF00E5FF) : Colors.white),
-      thickness: 1.2 + (rand.nextDouble() * 1.8),
+  static final List<_GoldSparkleData> _sparks = List.generate(45, (i) {
+    final rand = Random(i * 321 + 65);
+    return _GoldSparkleData(
+      x: rand.nextDouble(),
+      speed: 0.7 + (rand.nextDouble() * 0.9),
+      size: 2.0 + (rand.nextDouble() * 3.5),
+      phase: rand.nextDouble() * 2 * pi,
+      isStar: i % 2 == 0,
     );
   });
 
   @override
   void paint(Canvas canvas, Size size) {
+    // 1. Royal Dark Velvet Vignette
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0xAA000000),
+    );
+
+    // 2. Vertical Golden God-Rays beaming upward from base
+    for (int i = 0; i < 5; i++) {
+      final rayX = size.width * (0.2 + (i * 0.15));
+      final rayWidth = 35.0 + (i * 8.0);
+      final rayPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          colors: [
+            const Color(0x55FFD700),
+            const Color(0x22FFA000),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.45, 1.0],
+        ).createShader(Rect.fromLTWH(rayX - rayWidth / 2, 0, rayWidth, size.height));
+
+      canvas.drawRect(Rect.fromLTWH(rayX - rayWidth / 2, 0, rayWidth, size.height), rayPaint);
+    }
+
+    // 3. Golden Sparkling Star Rain cascading down
+    for (final s in _sparks) {
+      final curY = ((progress * s.speed * size.height * 1.3) + (s.phase * 90)) % size.height;
+      final curX = (s.x * size.width) + (sin(progress * 4 * pi + s.phase) * 12);
+      final alpha = (sin(progress * 5 * 2 * pi + s.phase).abs() * 0.5 + 0.5).clamp(0.0, 1.0);
+
+      final sparkPaint = Paint()
+        ..color = const Color(0xFFFFD700).withOpacity(alpha)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+
+      if (s.isStar) {
+        final p = Path()
+          ..moveTo(curX, curY - s.size * 2)
+          ..lineTo(curX + s.size * 0.4, curY - s.size * 0.4)
+          ..lineTo(curX + s.size * 2, curY)
+          ..lineTo(curX + s.size * 0.4, curY + s.size * 0.4)
+          ..lineTo(curX, curY + s.size * 2)
+          ..lineTo(curX - s.size * 0.4, curY + s.size * 0.4)
+          ..lineTo(curX - s.size * 2, curY)
+          ..lineTo(curX - s.size * 0.4, curY - s.size * 0.4)
+          ..close();
+        canvas.drawPath(p, sparkPaint);
+      } else {
+        canvas.drawCircle(Offset(curX, curY), s.size / 2, sparkPaint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullRoyalGoldenShowerPainter oldDelegate) => true;
+}
+
+class _GoldSparkleData {
+  final double x;
+  final double speed;
+  final double size;
+  final double phase;
+  final bool isStar;
+
+  const _GoldSparkleData({
+    required this.x,
+    required this.speed,
+    required this.size,
+    required this.phase,
+    required this.isStar,
+  });
+}
+
+/// 4. 🏰 Love Castle & Tiki Love: Ascending 3D Neon Hearts & Heart Fireworks
+class _FullLoveHeartsPainter extends CustomPainter {
+  final double progress;
+
+  _FullLoveHeartsPainter({required this.progress});
+
+  static final List<_HeartParticle> _hearts = List.generate(30, (i) {
+    final rand = Random(i * 789 + 12);
+    return _HeartParticle(
+      startX: rand.nextDouble(),
+      speed: 0.6 + (rand.nextDouble() * 0.9),
+      size: 16.0 + (rand.nextDouble() * 22.0),
+      swayAmp: 18.0 + (rand.nextDouble() * 25.0),
+      phase: rand.nextDouble() * 2 * pi,
+      color: i % 3 == 0 ? const Color(0xFFFF4081) : (i % 3 == 1 ? const Color(0xFFFF80AB) : const Color(0xFFE040FB)),
+    );
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. Romantic Pink Magical Aurora
+    final auraPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(0.0, -0.40),
+        radius: 0.95,
+        colors: [
+          const Color(0x66E91E63),
+          const Color(0x339C27B0),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), auraPaint);
+
+    // 2. Ascending 3D Neon Hearts floating from bottom to top
+    for (final h in _hearts) {
+      final curY = size.height - ((progress * h.speed * size.height * 1.3 + (h.phase * 80)) % (size.height + 60)) + 30;
+      final curX = (h.startX * size.width) + (sin((progress * 3 * 2 * pi) + h.phase) * h.swayAmp);
+      final pulse = 1.0 + (sin(progress * 6 * pi + h.phase).abs() * 0.15);
+
+      canvas.save();
+      canvas.translate(curX, curY);
+      canvas.scale(pulse, pulse);
+
+      final heartPath = _createHeartPath(h.size);
+      final heartPaint = Paint()
+        ..shader = RadialGradient(
+          colors: [
+            Colors.white,
+            h.color,
+            h.color.withOpacity(0.7),
+          ],
+        ).createShader(Rect.fromCenter(center: Offset.zero, width: h.size, height: h.size))
+        ..style = PaintingStyle.fill;
+
+      canvas.drawPath(
+        heartPath,
+        Paint()
+          ..color = h.color.withOpacity(0.5)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
+      );
+      canvas.drawPath(heartPath, heartPaint);
+      canvas.restore();
+    }
+
+    // 3. Heart Fireworks Bursts in Upper Sky (Phase 3 & 4)
+    if (progress > 0.35) {
+      final fwProgress = ((progress - 0.35) / 0.60).clamp(0.0, 1.0);
+      _drawHeartFirework(canvas, Offset(size.width * 0.25, size.height * 0.18), fwProgress, const Color(0xFFFF4081));
+      _drawHeartFirework(canvas, Offset(size.width * 0.75, size.height * 0.22), (fwProgress + 0.33) % 1.0, const Color(0xFFFF80AB));
+      _drawHeartFirework(canvas, Offset(size.width * 0.50, size.height * 0.12), (fwProgress + 0.66) % 1.0, const Color(0xFFFFD54F));
+    }
+  }
+
+  Path _createHeartPath(double size) {
+    final path = Path();
+    path.moveTo(0, size * 0.35);
+    path.cubicTo(-size * 0.5, -size * 0.2, -size * 0.5, -size * 0.5, 0, -size * 0.2);
+    path.cubicTo(size * 0.5, -size * 0.5, size * 0.5, -size * 0.2, 0, size * 0.35);
+    return path;
+  }
+
+  void _drawHeartFirework(Canvas canvas, Offset center, double p, Color color) {
+    if (p <= 0.05 || p >= 0.95) return;
+    final radius = p * 65.0;
+    final alpha = (1.0 - p).clamp(0.0, 1.0);
+
+    for (int i = 0; i < 12; i++) {
+      final angle = i * (2 * pi / 12);
+      final x = center.dx + (cos(angle) * radius);
+      final y = center.dy + (sin(angle) * radius * 0.75) - (sin(angle).abs() * radius * 0.25);
+
+      final sparkPaint = Paint()
+        ..color = color.withOpacity(alpha)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+      canvas.drawCircle(Offset(x, y), 2.5 * (1.0 - p * 0.5), sparkPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullLoveHeartsPainter oldDelegate) => true;
+}
+
+class _HeartParticle {
+  final double startX;
+  final double speed;
+  final double size;
+  final double swayAmp;
+  final double phase;
+  final Color color;
+
+  const _HeartParticle({
+    required this.startX,
+    required this.speed,
+    required this.size,
+    required this.swayAmp,
+    required this.phase,
+    required this.color,
+  });
+}
+
+/// 5. 🏎️ Luxury Super Car: Neon Cyber Highway & Celebration Fireworks
+class _FullHighwayFireworksPainter extends CustomPainter {
+  final double progress;
+
+  _FullHighwayFireworksPainter({required this.progress});
+
+  static final List<_StreakData> _streaks = List.generate(14, (i) {
+    final rand = Random(i * 333 + 7);
+    return _StreakData(
+      yNorm: 0.12 + (rand.nextDouble() * 0.24),
+      length: 90.0 + (rand.nextDouble() * 160.0),
+      speed: 2.2 + (rand.nextDouble() * 3.5),
+      color: i % 3 == 0
+          ? const Color(0xFFFF9100)
+          : (i % 3 == 1 ? const Color(0xFF00E5FF) : Colors.white),
+      thickness: 1.2 + (rand.nextDouble() * 2.0),
+    );
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. Cyber Highway Dark Asphalt & Amber Horizon Haze
+    final roadPaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Color(0x00000000),
+          Color(0x44FF6D00),
+          Color(0x77000000),
+          Color(0x00000000),
+        ],
+        stops: [0.0, 0.35, 0.70, 1.0],
+      ).createShader(Rect.fromLTWH(0, size.height * 0.12, size.width, size.height * 0.24));
+    canvas.drawRect(Rect.fromLTWH(0, size.height * 0.12, size.width, size.height * 0.24), roadPaint);
+
+    // 2. High-speed horizontal neon speed lines
     for (final s in _streaks) {
       final curX = (size.width - ((progress * s.speed * size.width) % (size.width + s.length * 2))) + s.length;
       final curY = s.yNorm * size.height;
@@ -3150,10 +3223,35 @@ class _HighwaySpeedStreaksPainter extends CustomPainter {
 
       canvas.drawLine(Offset(curX - s.length, curY), Offset(curX, curY), paint);
     }
+
+    // 3. Celebration Fireworks in the Sky (Image 2: "④ Fireworks")
+    if (progress > 0.45) {
+      final p = ((progress - 0.45) / 0.50).clamp(0.0, 1.0);
+      _drawFirework(canvas, Offset(size.width * 0.20, size.height * 0.12), p, const Color(0xFFFFD54F));
+      _drawFirework(canvas, Offset(size.width * 0.80, size.height * 0.15), (p + 0.35) % 1.0, const Color(0xFF00E5FF));
+      _drawFirework(canvas, Offset(size.width * 0.50, size.height * 0.08), (p + 0.70) % 1.0, const Color(0xFFFF4081));
+    }
+  }
+
+  void _drawFirework(Canvas canvas, Offset center, double p, Color color) {
+    if (p <= 0.05 || p >= 0.95) return;
+    final radius = p * 60.0;
+    final alpha = (1.0 - p).clamp(0.0, 1.0);
+
+    for (int i = 0; i < 10; i++) {
+      final angle = i * (2 * pi / 10);
+      final x = center.dx + (cos(angle) * radius);
+      final y = center.dy + (sin(angle) * radius);
+
+      final sparkPaint = Paint()
+        ..color = color.withOpacity(alpha)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+      canvas.drawCircle(Offset(x, y), 2.2 * (1.0 - p * 0.5), sparkPaint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant _HighwaySpeedStreaksPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _FullHighwayFireworksPainter oldDelegate) => true;
 }
 
 class _StreakData {
@@ -3169,5 +3267,457 @@ class _StreakData {
     required this.speed,
     required this.color,
     required this.thickness,
+  });
+}
+
+/// 6. 🐋 Ocean Whale & Yacht: Deep Ocean Abyss, Caustics & Ascending Bubbles
+class _FullOceanBubblesPainter extends CustomPainter {
+  final double progress;
+
+  _FullOceanBubblesPainter({required this.progress});
+
+  static final List<_BubbleData> _bubbles = List.generate(32, (i) {
+    final rand = Random(i * 654 + 32);
+    return _BubbleData(
+      x: rand.nextDouble(),
+      speed: 0.6 + (rand.nextDouble() * 0.8),
+      size: 5.0 + (rand.nextDouble() * 12.0),
+      wobbleSpeed: 2.0 + (rand.nextDouble() * 4.0),
+      phase: rand.nextDouble() * 2 * pi,
+    );
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. Deep Ocean Marine Abyss
+    final oceanPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          const Color(0x3300E5FF),
+          const Color(0x66004D60),
+          const Color(0xAA001830),
+          const Color(0xCC000E1C),
+        ],
+        stops: const [0.0, 0.35, 0.70, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), oceanPaint);
+
+    // 2. Sunlight Water Caustics Shimmer in upper section
+    for (int i = 0; i < 4; i++) {
+      final caustY = size.height * (0.08 + (i * 0.06));
+      final caustPaint = Paint()
+        ..color = const Color(0x3300E5FF).withOpacity((sin(progress * 4 * pi + i).abs() * 0.2 + 0.15))
+        ..strokeWidth = 3.0
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+
+      final p = Path();
+      p.moveTo(0, caustY);
+      for (double x = 0; x <= size.width; x += 30) {
+        p.lineTo(x, caustY + sin((x / 50) + (progress * 5 * pi) + i) * 6);
+      }
+      canvas.drawPath(p, caustPaint);
+    }
+
+    // 3. Ascending Bioluminescent Bubbles
+    for (final b in _bubbles) {
+      final curY = size.height - ((progress * b.speed * size.height * 1.3 + (b.phase * 80)) % (size.height + 40)) + 20;
+      final curX = (b.x * size.width) + (sin((progress * b.wobbleSpeed * 2 * pi) + b.phase) * 12);
+      final alpha = (sin(progress * 4 * pi + b.phase).abs() * 0.35 + 0.65).clamp(0.0, 1.0);
+
+      final bubblePaint = Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-0.35, -0.35),
+          colors: [
+            Colors.white.withOpacity(alpha),
+            const Color(0x8800E5FF).withOpacity(alpha * 0.7),
+            const Color(0x22004D60).withOpacity(alpha * 0.2),
+          ],
+        ).createShader(Rect.fromCircle(center: Offset(curX, curY), radius: b.size / 2))
+        ..style = PaintingStyle.fill;
+
+      canvas.drawCircle(Offset(curX, curY), b.size / 2, bubblePaint);
+
+      // Bubble rim highlight
+      canvas.drawCircle(
+        Offset(curX, curY),
+        b.size / 2,
+        Paint()
+          ..color = Colors.white.withOpacity(alpha * 0.8)
+          ..strokeWidth = 0.8
+          ..style = PaintingStyle.stroke,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullOceanBubblesPainter oldDelegate) => true;
+}
+
+class _BubbleData {
+  final double x;
+  final double speed;
+  final double size;
+  final double wobbleSpeed;
+  final double phase;
+
+  const _BubbleData({
+    required this.x,
+    required this.speed,
+    required this.size,
+    required this.wobbleSpeed,
+    required this.phase,
+  });
+}
+
+/// 7. 🪽 Diamond Wings: Prismatic Rainbow Dispersion Rays & Starburst Glints
+class _FullDiamondPrismPainter extends CustomPainter {
+  final double progress;
+
+  _FullDiamondPrismPainter({required this.progress});
+
+  static final List<_DiamondGlintData> _glints = List.generate(35, (i) {
+    final rand = Random(i * 852 + 19);
+    return _DiamondGlintData(
+      x: rand.nextDouble(),
+      y: rand.nextDouble(),
+      size: 3.0 + (rand.nextDouble() * 5.0),
+      speed: 3.0 + (rand.nextDouble() * 5.0),
+      phase: rand.nextDouble() * 2 * pi,
+      color: i % 4 == 0
+          ? const Color(0xFF80D8FF)
+          : (i % 4 == 1 ? const Color(0xFFFF80AB) : (i % 4 == 2 ? const Color(0xFFFFD54F) : Colors.white)),
+    );
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. Crystal Sapphire Dark Void
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0x99000A1A),
+    );
+
+    // 2. Prismatic Rainbow Dispersion Rays streaming across screen
+    for (int i = 0; i < 6; i++) {
+      final angle = -0.35 + (i * 0.12) + (sin(progress * 2 * pi) * 0.05);
+      final rayPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.transparent,
+            const Color(0x3300E5FF),
+            const Color(0x44E040FB),
+            const Color(0x33FFD700),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.3, 0.6, 0.85, 1.0],
+        ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      canvas.save();
+      canvas.translate(size.width * 0.5, size.height * 0.25);
+      canvas.rotate(angle);
+      canvas.drawRect(Rect.fromLTWH(-size.width, -30, size.width * 2, 60), rayPaint);
+      canvas.restore();
+    }
+
+    // 3. Diamond Starburst Glints flashing across the screen
+    for (final g in _glints) {
+      final alpha = (sin((progress * g.speed * 2 * pi) + g.phase).abs() * 0.7 + 0.3).clamp(0.0, 1.0);
+      final curX = g.x * size.width;
+      final curY = g.y * size.height;
+
+      final sparkPaint = Paint()
+        ..color = g.color.withOpacity(alpha)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2);
+
+      // 4-point starburst
+      final p = Path()
+        ..moveTo(curX, curY - g.size * 2.5)
+        ..lineTo(curX + g.size * 0.4, curY - g.size * 0.4)
+        ..lineTo(curX + g.size * 2.5, curY)
+        ..lineTo(curX + g.size * 0.4, curY + g.size * 0.4)
+        ..lineTo(curX, curY + g.size * 2.5)
+        ..lineTo(curX - g.size * 0.4, curY + g.size * 0.4)
+        ..lineTo(curX - g.size * 2.5, curY)
+        ..lineTo(curX - g.size * 0.4, curY - g.size * 0.4)
+        ..close();
+      canvas.drawPath(p, sparkPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullDiamondPrismPainter oldDelegate) => true;
+}
+
+class _DiamondGlintData {
+  final double x;
+  final double y;
+  final double size;
+  final double speed;
+  final double phase;
+  final Color color;
+
+  const _DiamondGlintData({
+    required this.x,
+    required this.y,
+    required this.size,
+    required this.speed,
+    required this.phase,
+    required this.color,
+  });
+}
+
+/// 8. ⭐ Meteor Shower: Cascading Shooting Stars Raining Diagonally
+class _FullMeteorShowerPainter extends CustomPainter {
+  final double progress;
+
+  _FullMeteorShowerPainter({required this.progress});
+
+  static final List<_MeteorData> _meteors = List.generate(35, (i) {
+    final rand = Random(i * 741 + 83);
+    return _MeteorData(
+      startX: rand.nextDouble() * 1.4,
+      startY: rand.nextDouble() * 0.7,
+      speed: 1.2 + (rand.nextDouble() * 1.6),
+      length: 60.0 + (rand.nextDouble() * 100.0),
+      thickness: 1.5 + (rand.nextDouble() * 2.0),
+      phase: rand.nextDouble() * 2 * pi,
+    );
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. Midnight Sky Void
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0xAA000614),
+    );
+
+    // 2. Shooting stars streaking diagonally across screen
+    for (final m in _meteors) {
+      final p = ((progress * m.speed) + (m.phase / (2 * pi))) % 1.0;
+      final curX = (m.startX * size.width) - (p * size.width * 1.2);
+      final curY = (m.startY * size.height) + (p * size.height * 1.1);
+
+      final tailX = curX + (m.length * 0.75);
+      final tailY = curY - (m.length * 0.65);
+
+      final meteorPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [
+            Colors.transparent,
+            const Color(0xFFFFD54F).withOpacity(0.4),
+            const Color(0xFFFFD54F),
+            Colors.white,
+          ],
+          stops: const [0.0, 0.4, 0.85, 1.0],
+        ).createShader(Rect.fromPoints(Offset(tailX, tailY), Offset(curX, curY)))
+        ..strokeWidth = m.thickness
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawLine(Offset(tailX, tailY), Offset(curX, curY), meteorPaint);
+
+      // Star head spark
+      canvas.drawCircle(
+        Offset(curX, curY),
+        m.thickness * 1.2,
+        Paint()..color = Colors.white,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullMeteorShowerPainter oldDelegate) => true;
+}
+
+class _MeteorData {
+  final double startX;
+  final double startY;
+  final double speed;
+  final double length;
+  final double thickness;
+  final double phase;
+
+  const _MeteorData({
+    required this.startX,
+    required this.startY,
+    required this.speed,
+    required this.length,
+    required this.thickness,
+    required this.phase,
+  });
+}
+
+/// 9. 🐎 Golden Horse: Swirling Energy Vortex Ribbons
+class _FullGoldenHorseVortexPainter extends CustomPainter {
+  final double progress;
+
+  _FullGoldenHorseVortexPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0xAA0A0700),
+    );
+
+    // Swirling golden stardust energy rings wrapping the center
+    for (int i = 0; i < 4; i++) {
+      final ringAngle = (progress * 3 * pi) + (i * pi / 2);
+      final ringWidth = size.width * (0.55 + (i * 0.12));
+      final ringHeight = size.height * (0.22 + (i * 0.05));
+
+      final ringPaint = Paint()
+        ..shader = SweepGradient(
+          transform: GradientRotation(ringAngle),
+          colors: const [
+            Colors.transparent,
+            Color(0x88FFD700),
+            Color(0xFFFF9100),
+            Colors.white,
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.35, 0.65, 0.85, 1.0],
+        ).createShader(Rect.fromCenter(
+          center: Offset(size.width * 0.5, size.height * 0.23),
+          width: ringWidth,
+          height: ringHeight,
+        ))
+        ..strokeWidth = 3.0
+        ..style = PaintingStyle.stroke
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(size.width * 0.5, size.height * 0.23),
+          width: ringWidth,
+          height: ringHeight,
+        ),
+        ringPaint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullGoldenHorseVortexPainter oldDelegate) => true;
+}
+
+/// 10. 🕊️ Angel Vehicle: Divine Heavenly God-Rays & Floating Feathers
+class _FullHeavenlyBlessingPainter extends CustomPainter {
+  final double progress;
+
+  _FullHeavenlyBlessingPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0x990D0B00),
+    );
+
+    // Diagonal golden blessing god-rays streaming from heaven
+    for (int i = 0; i < 6; i++) {
+      final rayX = size.width * (0.1 + (i * 0.16));
+      final rayPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0x66FFD54F),
+            const Color(0x22FFA000),
+            Colors.transparent,
+          ],
+          stops: const [0.0, 0.45, 1.0],
+        ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
+
+      final path = Path()
+        ..moveTo(rayX - 25, 0)
+        ..lineTo(rayX + 25, 0)
+        ..lineTo(rayX + 80, size.height)
+        ..lineTo(rayX + 20, size.height)
+        ..close();
+
+      canvas.drawPath(path, rayPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullHeavenlyBlessingPainter oldDelegate) => true;
+}
+
+/// 11. 🎂 Celebration Cake: Confetti Shower & Party Bokeh
+class _FullCelebrationConfettiPainter extends CustomPainter {
+  final double progress;
+
+  _FullCelebrationConfettiPainter({required this.progress});
+
+  static final List<_ConfettiData> _confetti = List.generate(40, (i) {
+    final rand = Random(i * 555 + 18);
+    return _ConfettiData(
+      startX: rand.nextDouble(),
+      speed: 0.7 + (rand.nextDouble() * 0.8),
+      size: 7.0 + (rand.nextDouble() * 9.0),
+      rotSpeed: 3.0 + (rand.nextDouble() * 5.0),
+      phase: rand.nextDouble() * 2 * pi,
+      color: _confettiColors[i % _confettiColors.length],
+    );
+  });
+
+  static const List<Color> _confettiColors = [
+    Color(0xFFFFD700),
+    Color(0xFFFF4081),
+    Color(0xFF00E5FF),
+    Color(0xFF76FF03),
+    Color(0xFFE040FB),
+    Color(0xFFFF9100),
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = const Color(0x88000000),
+    );
+
+    for (final c in _confetti) {
+      final curY = ((progress * c.speed * size.height * 1.3) + (c.phase * 90)) % (size.height + 40) - 20;
+      final curX = (c.startX * size.width) + (sin(progress * 4 * pi + c.phase) * 16);
+      final rot = (progress * c.rotSpeed * 2 * pi) + c.phase;
+
+      canvas.save();
+      canvas.translate(curX, curY);
+      canvas.rotate(rot);
+
+      final p = Paint()..color = c.color;
+      canvas.drawRect(Rect.fromCenter(center: Offset.zero, width: c.size, height: c.size * 0.6), p);
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FullCelebrationConfettiPainter oldDelegate) => true;
+}
+
+class _ConfettiData {
+  final double startX;
+  final double speed;
+  final double size;
+  final double rotSpeed;
+  final double phase;
+  final Color color;
+
+  const _ConfettiData({
+    required this.startX,
+    required this.speed,
+    required this.size,
+    required this.rotSpeed,
+    required this.phase,
+    required this.color,
   });
 }
