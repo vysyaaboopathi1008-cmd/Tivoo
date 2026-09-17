@@ -2146,12 +2146,12 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
                   ),
                 ),
 
-                // Continuous Live Chat Feed that flows from bottom up into the video arena!
-                // Does NOT get trapped or hidden behind the contributors bar ("malla varthu display la theriyanu lite")
+                // Continuous Live Chat Feed strictly kept in the area BELOW the video arena + contributors
+                // NEVER overlaps onto the video area ("complusory video ku ulla poga kudathu")
                 Positioned(
                   left: 12,
                   width: (MediaQuery.sizeOf(context).width * 0.70).clamp(240.0, 310.0),
-                  top: 100,
+                  top: arenaHeight + 82,
                   bottom: 64,
                   child: _buildGlassmorphicChatFeed(),
                 ),
@@ -2239,7 +2239,7 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
     );
   }
 
-  /// 2. Top Streamer Headers - Fitted to guarantee ZERO overflow on all screens (fixing 32px overflow)
+  /// 2. Top Streamer Headers - Symmetrical, balanced capsules with Settings & Close buttons on far right
   Widget _buildTopStreamerHeaders() {
     return FittedBox(
       fit: BoxFit.scaleDown,
@@ -2249,11 +2249,11 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Left Streamer Capsule (Neha ✨)
+            // Left Streamer Capsule (Neha ✨) - Symmetrical & Clean
             Flexible(
               flex: 5,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3.5),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(20),
@@ -2281,19 +2281,19 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12.5,
+                              fontSize: 12.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('💖 ', style: TextStyle(fontSize: 9.5)),
+                              const Text('💖 ', style: TextStyle(fontSize: 9.0)),
                               Text(
                                 _leftLikes,
                                 style: const TextStyle(
                                   color: Color(0xFFFFD600),
-                                  fontSize: 10,
+                                  fontSize: 9.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -2315,11 +2315,11 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
             _buildOverlappingGifters([AppAssets.status5, AppAssets.status2]),
             const SizedBox(width: 3),
 
-            // Right Streamer Capsule (Arun) + Settings (⚙️) & Close
+            // Right Streamer Capsule (Arun) - Exactly Symmetrical with Left Streamer
             Flexible(
               flex: 5,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3.5),
                 decoration: BoxDecoration(
                   color: Colors.black.withValues(alpha: 0.65),
                   borderRadius: BorderRadius.circular(20),
@@ -2328,24 +2328,17 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Quick Settings (⚙️) icon
-                    GestureDetector(
-                      onTap: _showPkSettingsModal,
-                      child: Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.settings_rounded, color: Color(0xFFFFD600), size: 13),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: const Color(0xFF00E5FF), width: 1.5),
                       ),
+                      child: CustomAvatar(radius: 13, assetPath: _rightStreamerAsset),
                     ),
-                    const SizedBox(width: 3),
-
+                    const SizedBox(width: 5),
                     Flexible(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
@@ -2354,19 +2347,19 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 12.5,
+                              fontSize: 12.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text('💖 ', style: TextStyle(fontSize: 9.5)),
+                              const Text('💖 ', style: TextStyle(fontSize: 9.0)),
                               Text(
                                 _rightLikes,
                                 style: const TextStyle(
                                   color: Color(0xFF00E5FF),
-                                  fontSize: 10,
+                                  fontSize: 9.5,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -2375,29 +2368,48 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
                         ],
                       ),
                     ),
-                    const SizedBox(width: 5),
-                    CustomAvatar(radius: 13, assetPath: _rightStreamerAsset),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () {
-                        if (widget.onBack != null) {
-                          widget.onBack!();
-                        } else {
-                          Navigator.of(context).maybePop();
-                        }
-                      },
-                      child: Container(
-                        width: 18,
-                        height: 18,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.close_rounded, color: Colors.white, size: 12),
-                      ),
-                    ),
                   ],
                 ),
+              ),
+            ),
+
+            const SizedBox(width: 4),
+
+            // Quick Settings (⚙️)
+            GestureDetector(
+              onTap: _showPkSettingsModal,
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.65),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white24, width: 1.0),
+                ),
+                child: const Icon(Icons.settings_rounded, color: Color(0xFFFFD600), size: 14),
+              ),
+            ),
+
+            const SizedBox(width: 4),
+
+            // Close (✖️) Button
+            GestureDetector(
+              onTap: () {
+                if (widget.onBack != null) {
+                  widget.onBack!();
+                } else {
+                  Navigator.of(context).maybePop();
+                }
+              },
+              child: Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.65),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white24, width: 1.0),
+                ),
+                child: const Icon(Icons.close_rounded, color: Colors.white, size: 15),
               ),
             ),
           ],
@@ -2752,12 +2764,11 @@ class _PkBattleLiveScreenState extends State<PkBattleLiveScreen>
             final comment = _comments[commentIndex];
             final isGift = comment.type == LiveCommentType.gift;
 
-            // 5-6 newest comments at bottom: 100% bold & dark capsules ("6 message nalla theriyanu")
-            // As comments float higher up over the screen into the video arena:
-            // they smoothly transition to "lite" display with soft opacity ("malla varthu display la theriyanu lite")
-            final double fadeOpacity = index < 5
+            // Exactly 4 newest comments at bottom: 100% bold & clear ("4 message nalla thericha pothu")
+            // Older comments floating further up become progressively lighter ("apporam yella lite thericha pothu")
+            final double fadeOpacity = index < 4
                 ? 1.0
-                : (1.0 - ((index - 4) * 0.16)).clamp(0.22, 0.85);
+                : (0.55 - ((index - 3) * 0.15)).clamp(0.14, 0.55);
 
             return TweenAnimationBuilder<double>(
               key: ValueKey(comment.id),

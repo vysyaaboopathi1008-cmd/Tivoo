@@ -93,12 +93,12 @@ class _LiveChatListViewState extends State<LiveChatListView> {
           }
           final comment = widget.comments[itemIndex];
 
-          // Exactly 6 newest comments are 100% bold & clear ("6 message nalla theriyanu")
-          // Older comments floating further up into the video become progressively lighter ("apporam poga poga inu malla dispaly konjam kammiya theriyanu")
+          // Exactly 4 newest comments are 100% bold & clear ("4 message nalla thericha pothu")
+          // Older comments floating further up become progressively lighter ("apporam yella lite thericha pothu")
           double fadeOpacity = 1.0;
-          if (index >= 6) {
-            final int step = index - 6;
-            fadeOpacity = (0.65 - (step * 0.15)).clamp(0.12, 0.65);
+          if (index >= 4) {
+            final int step = index - 4;
+            fadeOpacity = (0.55 - (step * 0.15)).clamp(0.14, 0.55);
           }
 
           return _buildFloatingCommentItem(comment, fadeOpacity: fadeOpacity);
