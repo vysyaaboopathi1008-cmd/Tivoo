@@ -66,133 +66,133 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
     _carController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3900),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_carController);
       });
 
     _yachtController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_yachtController);
       });
 
     _rocketController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_rocketController);
       });
 
     _wingsController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_wingsController);
       });
 
     _roseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_roseController);
       });
 
     _crownController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_crownController);
       });
 
     _diamondController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3700),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_diamondController);
       });
 
     _cakeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_cakeController);
       });
 
     _teddyController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_teddyController);
       });
 
     _kittyController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_kittyController);
       });
 
     _tikiLoveController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_tikiLoveController);
       });
 
     _loveController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_loveController);
       });
 
     _flowersController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3800),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_flowersController);
       });
 
     _worldTourController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_worldTourController);
       });
 
     _castleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4100),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_castleController);
       });
 
     _horseController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_horseController);
       });
 
     _whaleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_whaleController);
       });
 
     _angelVehicleController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 4000),
+      duration: const Duration(milliseconds: 4500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_angelVehicleController);
       });
 
     _shakeController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 3200),
+      duration: const Duration(milliseconds: 3500),
     )..addStatusListener((s) {
         if (s == AnimationStatus.completed) onComplete(_shakeController);
       });
@@ -388,39 +388,51 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final double targetCenterX = (screenWidth - 230) / 2;
         final double targetCenterY = screenHeight * 0.38;
 
+        final double offscreenLeft = -260.0;
+        final double offscreenRight = screenWidth + 260.0;
+
         double posX;
         double posY;
         double scale;
         double tiltAngle;
-        double opacity = 1.0;
         double suspensionDip = 0.0;
+        double opacity = 1.0;
+        bool isDrifting = false;
 
-        if (val < 0.20) {
-          // Stationary -> Headlights turn on, suspension sets
-          final p = val / 0.20;
-          posX = targetCenterX - 40;
+        // Flow: Start -> Headlights -> Drive in -> Accelerate -> Drift -> Pass -> Exit
+        if (val < 0.22) {
+          // ① Drive in from left side, headlights turn on
+          final p = Curves.easeOutQuad.transform(val / 0.22);
+          posX = offscreenLeft + (p * (targetCenterX - 40 - offscreenLeft));
           posY = targetCenterY;
-          scale = 0.95;
+          scale = 0.92 + (p * 0.08);
           tiltAngle = 0.0;
-          suspensionDip = sin(p * pi) * 2.0;
-          opacity = (p / 0.10).clamp(0.0, 1.0);
-        } else if (val < 0.65) {
-          // Smoothly accelerates forward, camera follows dynamically, controlled turn
-          final p = (val - 0.20) / 0.45;
-          final accel = Curves.easeInCubic.transform(p);
-          posX = (targetCenterX - 40) + (accel * 50);
-          posY = targetCenterY - sin(p * pi) * 10;
-          scale = 0.95 + (p * 0.18);
-          tiltAngle = sin(p * 2 * pi) * 0.04;
-          suspensionDip = sin(p * 8 * pi) * 1.5;
+          suspensionDip = sin(p * 4 * pi) * 2.0;
+        } else if (val < 0.48) {
+          // ② Accelerate across center, camera push-in
+          final p = (val - 0.22) / 0.26;
+          posX = (targetCenterX - 40) + (p * 40);
+          posY = targetCenterY - sin(p * pi) * 8;
+          scale = 1.00 + (p * 0.16);
+          tiltAngle = sin(p * 2 * pi) * 0.02;
+          suspensionDip = sin(p * 6 * pi) * 1.5;
+        } else if (val < 0.70) {
+          // ③ Controlled realistic drift near center, subtle tire smoke & road sparks
+          final p = (val - 0.48) / 0.22;
+          posX = targetCenterX + (p * 35);
+          posY = targetCenterY - 8 + (p * 14);
+          scale = 1.16;
+          tiltAngle = -0.13 * sin(p * pi);
+          suspensionDip = sin(p * 8 * pi) * 2.0;
+          isDrifting = true;
         } else {
-          // Controlled high-speed curve & smooth cinematic settle
-          final p = (val - 0.65) / 0.35;
-          posX = (targetCenterX + 10) + (p * 40);
-          posY = (targetCenterY - 10) + (p * 20);
-          scale = 1.13 - (p * 0.30);
-          tiltAngle = 0.02 * (1.0 - p);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
+          // ④ Accelerate toward right side and EXIT completely off-screen
+          final p = Curves.easeInCubic.transform((val - 0.70) / 0.30);
+          posX = (targetCenterX + 35) + (p * (offscreenRight - (targetCenterX + 35)));
+          posY = targetCenterY + 6 - (p * 12);
+          scale = 1.16 + (p * 0.04);
+          tiltAngle = 0.03 * (1.0 - p);
+          suspensionDip = sin(p * 10 * pi) * 1.5;
         }
 
         return Stack(
@@ -434,14 +446,22 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               width: 220,
             ),
 
-            // Headlights Lighting the Road in Front (Smoothly turns on after val >= 0.08)
-            if (val >= 0.08 && val < 0.90)
+            // Drift tire smoke & road sparks near rear wheels
+            if (isDrifting)
+              _buildSubtleTireDriftVfx(
+                left: posX + 20,
+                top: posY + 80,
+                opacity: (sin((val - 0.48) / 0.22 * pi)).clamp(0.0, 1.0),
+              ),
+
+            // Headlights Lighting the Road in Front
+            if (val >= 0.06)
               Positioned(
                 left: posX + 175,
                 top: posY + 36,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: ((val - 0.08) / 0.15).clamp(0.0, 1.0) * opacity * 0.85,
+                    opacity: ((val - 0.06) / 0.15).clamp(0.0, 1.0) * opacity * 0.85,
                     child: Container(
                       width: 180,
                       height: 50,
@@ -505,7 +525,8 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   // on the water, the camera follows the yacht with a cinematic tracking movement,
   // then the yacht gradually slows down. Keep the original yacht design and
   // proportions unchanged. Photorealistic lighting, realistic physics, no cartoon
-  // effects."
+  // effects.
+  // Flow: Sail in → Accelerate → Water movement → Camera follow → Sail out"
   // ===========================================================================
   Widget _buildYachtAnimation() {
     return AnimatedBuilder(
@@ -518,15 +539,34 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final double targetCenterX = (screenWidth - 230) / 2;
         final double targetCenterY = screenHeight * 0.38;
 
-        // Cinematic tracking forward across realistic water
-        final double posX = targetCenterX - 20 + (sin(val * pi * 0.5) * 40);
-        // Natural wave bobbing physics (heave & pitch)
-        final double waveHeave = sin(val * 6 * pi) * 4.5;
-        final double wavePitch = cos(val * 6 * pi) * 0.025;
-        final double posY = targetCenterY + waveHeave;
+        final double offscreenLeft = -280.0;
+        final double offscreenRight = screenWidth + 280.0;
 
-        final double scale = 0.96 + (sin(val * pi) * 0.12);
-        final double opacity = val > 0.82 ? ((1.0 - val) / 0.18).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+        double posX;
+        double scale;
+
+        // Flow: Sail in -> Accelerate -> Water movement -> Camera follow -> Sail out
+        if (val < 0.28) {
+          // ① Sail in from left across realistic water
+          final p = Curves.easeOutQuad.transform(val / 0.28);
+          posX = offscreenLeft + (p * (targetCenterX - 40 - offscreenLeft));
+          scale = 0.90 + (p * 0.10);
+        } else if (val < 0.65) {
+          // ② Accelerate slightly as it passes center, camera tracking
+          final p = (val - 0.28) / 0.37;
+          posX = (targetCenterX - 40) + (p * 80);
+          scale = 1.00 + (sin(p * pi) * 0.16); // camera push-in
+        } else {
+          // ③ Sail out smoothly toward right side and exit
+          final p = Curves.easeInQuad.transform((val - 0.65) / 0.35);
+          posX = (targetCenterX + 40) + (p * (offscreenRight - (targetCenterX + 40)));
+          scale = 1.00 - (p * 0.06);
+        }
+
+        // Natural wave bobbing physics (heave & pitch)
+        final double waveHeave = sin(val * 8 * pi) * 4.5;
+        final double wavePitch = cos(val * 8 * pi) * 0.025;
+        final double posY = targetCenterY + waveHeave;
 
         return Stack(
           children: [
@@ -536,7 +576,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               top: posY + 96,
               width: 260,
               progress: val,
-              opacity: (0.75 * opacity).clamp(0.0, 0.75),
+              opacity: 0.75,
             ),
 
             // Subtle Water Surface Reflection
@@ -545,7 +585,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               top: posY + 108,
               child: IgnorePointer(
                 child: Opacity(
-                  opacity: (0.22 * opacity).clamp(0.0, 0.22),
+                  opacity: 0.22,
                   child: Transform(
                     transform: Matrix4.diagonal3Values(1.0, -0.35, 1.0),
                     alignment: Alignment.topCenter,
@@ -567,22 +607,19 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               left: posX,
               top: posY,
               child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform.rotate(
-                      angle: wavePitch,
-                      child: SizedBox(
-                        width: 230,
-                        height: 130,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFE0F7FA),
-                          child: Image.asset(
-                            AppAssets.giftYacht,
-                            fit: BoxFit.contain,
-                          ),
+                child: Transform.scale(
+                  scale: scale,
+                  child: Transform.rotate(
+                    angle: wavePitch,
+                    child: SizedBox(
+                      width: 230,
+                      height: 130,
+                      child: _buildRealisticSpecularSheen(
+                        progress: val,
+                        lightColor: const Color(0xFFE0F7FA),
+                        child: Image.asset(
+                          AppAssets.giftYacht,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
@@ -605,7 +642,8 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   // vibration occurs during launch, then the rocket moves smoothly through space.
   // Realistic physics, realistic engine exhaust, cinematic lighting and camera
   // movement. Keep the original rocket design and proportions unchanged. No
-  // cartoon effects."
+  // cartoon effects.
+  // Flow: Engine ignition → Lift → Accelerate → Camera follow → Exhaust trail → Exit"
   // ===========================================================================
   Widget _buildRocketAnimation() {
     return AnimatedBuilder(
@@ -615,52 +653,48 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenWidth = MediaQuery.sizeOf(context).width;
         final screenHeight = MediaQuery.sizeOf(context).height;
 
-        final double centerX = (screenWidth - 160) / 2;
-        final double startY = screenHeight * 0.55;
+        final double startX = screenWidth * 0.12;
+        final double startY = screenHeight * 0.72;
+        final double exitX = screenWidth + 200.0;
+        final double exitY = -200.0;
 
-        double posX = centerX;
+        double posX;
         double posY;
         double scale;
         double vibration = 0.0;
-        double opacity = 1.0;
 
-        if (val < 0.22) {
-          // Engines ignite realistically -> launch vibration at starting position
-          final p = val / 0.22;
+        // Flow: Engine ignition -> Lift -> Accelerate -> Camera follow -> Exhaust trail -> Exit
+        if (val < 0.20) {
+          // ① Engine ignition & liftoff vibration at bottom-left
+          final p = val / 0.20;
           vibration = sin(p * 48 * pi) * 1.8;
-          posY = startY;
-          scale = 0.95;
-          opacity = (p / 0.08).clamp(0.0, 1.0);
-        } else if (val < 0.78) {
-          // Gradually lifts from starting position and accelerates upward
-          final p = (val - 0.22) / 0.56;
-          final lift = pow(p, 1.8);
-          posY = startY - (lift * (screenHeight * 0.42));
-          scale = 0.95 + (p * 0.20);
-          vibration = sin(p * 24 * pi) * (1.2 * (1.0 - p));
+          posX = startX;
+          posY = startY - (p * 15);
+          scale = 0.92 + (p * 0.06);
         } else {
-          // Moves smoothly through space, seamless settle
-          final p = (val - 0.78) / 0.22;
-          posY = (startY - (screenHeight * 0.42)) - (p * 40);
-          scale = 1.15 - (p * 0.25);
-          opacity = (1.0 - p).clamp(0.0, 1.0);
+          // ② Accelerate diagonally across live video toward upper-right, exhaust trail & exit
+          final p = Curves.easeInCubic.transform((val - 0.20) / 0.80);
+          posX = startX + (p * (exitX - startX));
+          posY = (startY - 15) + (p * (exitY - (startY - 15)));
+          scale = 0.98 + (sin(p * pi) * 0.22);
+          vibration = sin(p * 16 * pi) * (1.2 * (1.0 - p));
         }
 
         posX += vibration;
 
         return Stack(
           children: [
-            // Engine Flames & Hot Plasma Exhaust Beneath the Rocket
-            if (val >= 0.08 && val < 0.88)
+            // Engine Flames & Hot Exhaust Beneath the Rocket
+            if (val >= 0.05)
               Positioned(
                 left: posX + 60,
                 top: posY + 120,
                 child: IgnorePointer(
                   child: Opacity(
-                    opacity: (sin(val * 32 * pi).abs() * 0.25 + 0.75) * opacity,
+                    opacity: (sin(val * 32 * pi).abs() * 0.25 + 0.75),
                     child: Container(
                       width: 40,
-                      height: 85,
+                      height: 90,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         gradient: const LinearGradient(
@@ -677,12 +711,12 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
                         boxShadow: const [
                           BoxShadow(
                             color: Color(0x9900E5FF),
-                            blurRadius: 20,
+                            blurRadius: 22,
                             spreadRadius: 3,
                           ),
                           BoxShadow(
                             color: Color(0x66FF6D00),
-                            blurRadius: 26,
+                            blurRadius: 28,
                             spreadRadius: 4,
                           ),
                         ],
@@ -697,10 +731,10 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
               left: posX,
               top: posY,
               child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
+                child: Transform.scale(
+                  scale: scale,
+                  child: Transform.rotate(
+                    angle: val < 0.20 ? 0.0 : -0.32,
                     child: SizedBox(
                       width: 160,
                       height: 160,
@@ -732,7 +766,8 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   // backward with natural weight. Premium cinematic lighting, realistic feather
   // texture, realistic shadows and depth. Keep the original wing design, colors
   // and proportions unchanged. No cartoon effects, no magical explosion, no
-  // excessive particles."
+  // excessive particles.
+  // Flow: Enter from behind center → Unfold → Natural feather airflow → Flap once or twice → Soft light reflection → Fold → Disappear"
   // ===========================================================================
   Widget _buildAngelWingsAnimation() {
     return AnimatedBuilder(
@@ -745,23 +780,37 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final double centerX = (screenWidth - 240) / 2;
         final double centerY = screenHeight * 0.32;
 
-        // Subtle airflow causes feather tips to move gently (micro pitch & roll)
+        double scale;
+        double flapFactor;
+        double opacity = 1.0;
+
+        // Flow: Enter from behind center -> Unfold -> Flap once or twice -> Soft light reflection -> Fold -> Disappear
+        if (val < 0.25) {
+          // ① Enter from behind center, gradually unfolds feather by feather
+          final p = Curves.easeOutCubic.transform(val / 0.25);
+          scale = 0.70 + (p * 0.30);
+          flapFactor = 0.20 + (p * 0.80);
+          opacity = (p / 0.12).clamp(0.0, 1.0);
+        } else if (val < 0.75) {
+          // ② Gently flap once or twice, camera approach (scale 1.0 -> 1.18), soft light reflection
+          final p = (val - 0.25) / 0.50;
+          scale = 1.00 + (sin(p * pi) * 0.18);
+          flapFactor = 0.88 + (sin(p * 4 * pi).abs() * 0.12);
+        } else {
+          // ③ Slowly fold and disappear behind the live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          scale = 1.00 - (p * 0.35);
+          flapFactor = 1.00 - (p * 0.80);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
         final double airflowSway = sin(val * 2 * pi) * 0.025;
-        // Natural weight elevation
         final double naturalElevation = sin(val * 2 * pi) * 6;
         final double posY = centerY + naturalElevation;
 
-        // Wings slightly move forward and backward with natural depth (camera push-in & settle)
-        final double scale = 0.94 + (sin(val * pi) * 0.14);
-
-        // Wings slowly open and close with natural feather movement (2 natural breathing flap cycles)
-        final double flapFactor = 0.88 + (sin(val * 4 * pi).abs() * 0.12);
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
-
         return Stack(
           children: [
-            // Realistic Soft Ambient Depth Shadow Behind the Wings
+            // Soft Realistic Ambient Depth Shadow Behind the Wings
             _buildRealisticGroundShadow(
               centerX: centerX + 120,
               groundY: posY + 160,
@@ -809,11 +858,8 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
   }
 
   // ===========================================================================
-  // 5. 🌹 ROSE
-  // "Red Rose gift rises elegantly from the bottom, petals gently open and bloom,
-  // water droplets sparkle, glowing pink-red heart particles and rose petals float
-  // around it, the rose slowly rotates with a neon aura, then petals fly outward
-  // and the gift fades into small glowing hearts. Only Rose animates."
+  // 5. 🌹 ROSE / FLOWER BOUQUET
+  // Flow: Rise → Present → Move closer → Natural flower movement → Petals → Exit
   // ===========================================================================
   Widget _buildRoseAnimation() {
     return AnimatedBuilder(
@@ -824,30 +870,58 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 190) / 2;
-        final double centerY = screenHeight * 0.35;
+        final double startY = screenHeight * 0.78;
+        final double targetY = screenHeight * 0.35;
+        final double exitY = screenHeight * 0.85;
 
-        // Gentle camera push-in
-        final double scale = 0.94 + (sin(val * pi) * 0.14);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Petals move slightly from a soft breeze
-        final double breezeSway = sin(val * 2 * pi) * 0.025;
+        // Flow: Rise -> Present -> Move closer -> Natural flower movement -> Petals -> Exit
+        if (val < 0.28) {
+          // ① Dynamically enters from bottom, gently moving upward as if presenting to host
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Present, moves closer toward camera, natural flower & leaves sway from soft breeze
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 4);
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          // ③ Slowly moves downward and completely disappears from live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
 
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+        final double breezeSway = sin(val * 4 * pi) * 0.03;
 
         return Stack(
           children: [
             // Soft realistic contact ground shadow
             _buildRealisticGroundShadow(
               centerX: centerX + 95,
-              groundY: centerY + 170,
+              groundY: posY + 170,
               scale: scale,
               width: 170,
             ),
 
+            // Gentle falling flower petals drifting around bouquet
+            if (val >= 0.35 && val <= 0.85)
+              _buildFallingPetals(
+                centerX: centerX + 95,
+                centerY: posY + 95,
+                progress: val,
+                opacity: opacity,
+              ),
+
             // Photorealistic Rose with Natural Studio Lighting Sweep
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -877,15 +951,9 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
       },
     );
   }
-    // ===========================================================================
+  // ===========================================================================
   // 8. 👑 CROWN
-  // "Create a realistic luxury crown movement. The golden crown slowly rises and
-  // rotates naturally, realistic gold reflections move across the metal surface,
-  // gemstones catch and reflect the light naturally, the crown gently moves toward
-  // the camera before settling back into position. Premium royal studio lighting,
-  // realistic metallic materials and shadows. Keep the original crown design,
-  // gemstones, colors and proportions unchanged. No magical effects, no cartoon
-  // animation."
+  // Flow: Rise → Rotate → Present → Gold reflection → Approach → Exit
   // ===========================================================================
   Widget _buildCrownAnimation() {
     return AnimatedBuilder(
@@ -896,30 +964,44 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 210) / 2;
-        final double centerY = screenHeight * 0.34;
+        final double startY = screenHeight * 0.78;
+        final double targetY = screenHeight * 0.33;
+        final double exitY = screenHeight * 0.85;
 
-        // Crown slowly rises from starting position to center
-        final double elevationProgress = Curves.easeOutCubic.transform((val / 0.40).clamp(0.0, 1.0));
-        final double startY = screenHeight * 0.45;
-        final double posY = startY - (elevationProgress * (startY - centerY));
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Gently moves toward the camera before settling back (camera push-in)
-        final double scale = 0.94 + (sin(val * pi) * 0.16);
+        // Flow: Rise -> Rotate -> Present -> Gold reflection -> Approach -> Exit
+        if (val < 0.28) {
+          // ① Dynamically rises from bottom of live video with 3D depth
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Slowly rotates, gold reflection, moves toward camera as if presenting to host
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 3);
+          scale = 1.00 + (sin(p * pi) * 0.20);
+        } else {
+          // ③ Slowly moves backward and descends out of the live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
 
-        // Rotates naturally in 3D space with subtle yaw & pitch
         final double rotY = sin(val * 2 * pi) * 0.22;
         final double rotX = -0.05 + sin(val * 2 * pi) * 0.02;
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
 
         return Stack(
           children: [
             // Soft Realistic Ground Contact Shadow Beneath the Crown
             _buildRealisticGroundShadow(
               centerX: centerX + 105,
-              groundY: centerY + 175,
+              groundY: posY + 175,
               scale: scale,
-              elevation: (startY - posY),
+              elevation: (targetY - posY).abs(),
               width: 190,
             ),
 
@@ -940,21 +1022,21 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
                 y: posY + 55,
                 size: 24,
                 color: Colors.white,
-                opacity: (sin(val * 14 * pi).abs() * 0.85).clamp(0.0, 0.85),
+                opacity: (sin(val * 14 * pi).abs() * 0.85 * opacity).clamp(0.0, 0.85),
               ),
               _buildSparkleGlint(
                 x: centerX + 105,
                 y: posY + 32,
                 size: 30,
                 color: const Color(0xFFFFEA00),
-                opacity: (cos(val * 16 * pi).abs() * 0.90).clamp(0.0, 0.90),
+                opacity: (cos(val * 16 * pi).abs() * 0.90 * opacity).clamp(0.0, 0.90),
               ),
               _buildSparkleGlint(
                 x: centerX + 150,
                 y: posY + 55,
                 size: 24,
                 color: Colors.white,
-                opacity: (sin(val * 18 * pi).abs() * 0.85).clamp(0.0, 0.85),
+                opacity: (sin(val * 18 * pi).abs() * 0.85 * opacity).clamp(0.0, 0.85),
               ),
             ],
 
@@ -998,13 +1080,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 7. 💎 DIAMOND
-  // "Create a photorealistic 3D diamond movement. The diamond slowly rotates
-  // naturally, realistic light passes through each facet, detailed reflections
-  // and refractions change as it rotates, subtle highlights move across the
-  // surface, the diamond gently moves closer to the camera and then returns.
-  // Realistic studio lighting, realistic glass-like optical behavior, natural
-  // shadows. Keep the original diamond design and proportions unchanged. No
-  // cartoon effects, no excessive particles."
+  // Flow: Rise → Rotate → Approach → Refraction → Shine → Descend
   // ===========================================================================
   Widget _buildDiamondAnimation() {
     return AnimatedBuilder(
@@ -1015,23 +1091,42 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 200) / 2;
-        final double centerY = screenHeight * 0.35;
+        final double startY = screenHeight * 0.78;
+        final double targetY = screenHeight * 0.34;
+        final double exitY = screenHeight * 0.85;
 
-        // Diamond gently moves closer to the camera and then returns
-        final double scale = 0.94 + (sin(val * pi) * 0.18);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Slowly rotates naturally with 3D optical perspective
+        // Flow: Rise -> Rotate -> Approach -> Refraction -> Shine -> Descend
+        if (val < 0.28) {
+          // ① Rises from bottom-center floating upward
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Slowly rotates, moves closer toward camera (depth), brilliant light refraction
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 4);
+          scale = 1.00 + (sin(p * pi) * 0.22);
+        } else {
+          // ③ Slowly moves backward and descends out of the live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
         final double rotY = val * 2 * pi;
         final double rotX = sin(val * 2 * pi) * 0.08;
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
 
         return Stack(
           children: [
             // Soft Realistic Ground Contact Shadow Beneath Diamond
             _buildRealisticGroundShadow(
               centerX: centerX + 100,
-              groundY: centerY + 175,
+              groundY: posY + 175,
               scale: scale,
               width: 170,
             ),
@@ -1039,35 +1134,35 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
             // Studio Backlight Rim Illumination
             _buildRealisticStudioAura(
               centerX: centerX + 100,
-              centerY: centerY + 100,
+              centerY: posY + 100,
               scale: scale,
               color: const Color(0xFF00E5FF),
               radius: 190,
               opacity: 0.22 * opacity,
             ),
 
-            // Subtle Optical Highlights Moving Across the Facets
+            // Facet Refraction Glints
             if (val >= 0.10 && val <= 0.88) ...[
               _buildSparkleGlint(
                 x: centerX + 100 + cos(rotY) * 35,
-                y: centerY + 90 + sin(rotY) * 20,
+                y: posY + 90 + sin(rotY) * 20,
                 size: 32,
                 color: Colors.white,
-                opacity: (sin(val * 16 * pi).abs() * 0.85).clamp(0.0, 0.85),
+                opacity: (sin(val * 16 * pi).abs() * 0.85 * opacity).clamp(0.0, 0.85),
               ),
               _buildSparkleGlint(
                 x: centerX + 100 - cos(rotY) * 40,
-                y: centerY + 110 - sin(rotY) * 15,
+                y: posY + 110 - sin(rotY) * 15,
                 size: 26,
                 color: const Color(0xFF80D8FF),
-                opacity: (cos(val * 20 * pi).abs() * 0.75).clamp(0.0, 0.75),
+                opacity: (cos(val * 20 * pi).abs() * 0.75 * opacity).clamp(0.0, 0.75),
               ),
             ],
 
             // Photorealistic 3D Diamond with Glass-like Refractive Sheen Sweep
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -1104,13 +1199,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 9. 🎂 BIRTHDAY CAKE
-  // "Create a realistic 3D birthday cake animation. The cake gently moves forward,
-  // candle flames naturally flicker with realistic fire movement, frosting and
-  // decorations remain stable, subtle candlelight reflections appear on the cake
-  // surface, the cake slowly rotates slightly while the camera gently moves closer.
-  // Realistic food texture, realistic lighting and shadows. Keep the original
-  // cake design, text and proportions unchanged. No cartoon effects, no
-  // excessive confetti."
+  // Flow: Rise → Candles ignite → Rotate → Camera approach → Celebration → Exit
   // ===========================================================================
   Widget _buildCakeAnimation() {
     return AnimatedBuilder(
@@ -1121,25 +1210,53 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 200) / 2;
-        final double centerY = screenHeight * 0.35;
+        final double startY = screenHeight * 0.78;
+        final double targetY = screenHeight * 0.35;
+        final double exitY = screenHeight * 0.85;
 
-        // Cake gently moves forward while the camera gently moves closer
-        final double scale = 0.94 + (sin(val * pi) * 0.14);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Cake slowly rotates slightly
+        // Flow: Rise -> Candles ignite -> Rotate -> Camera approach -> Celebration -> Exit
+        if (val < 0.28) {
+          // ① Dynamically rises into live video from bottom with realistic weight
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Candle flames naturally flicker, cake gently rotates, camera moves closer
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 3);
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          // ③ Slowly moves backward and disappears / descends out of live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
         final double tiltAngle = sin(val * 2 * pi) * 0.025;
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
 
         return Stack(
           children: [
             // Soft Realistic Ground Contact Shadow Beneath Cake
             _buildRealisticGroundShadow(
               centerX: centerX + 100,
-              groundY: centerY + 165,
+              groundY: posY + 165,
               scale: scale,
               width: 190,
             ),
+
+            // Subtle celebration confetti flakes falling around cake
+            if (val >= 0.30 && val <= 0.85)
+              _buildCelebrationConfetti(
+                centerX: centerX + 100,
+                centerY: posY + 80,
+                progress: val,
+                opacity: opacity,
+              ),
 
             // Candle Flames Naturally Flicker with Organic Fire Movement
             if (val >= 0.10 && val <= 0.88)
@@ -1149,7 +1266,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
                 return Positioned(
                   left: flameX,
-                  top: centerY + 26,
+                  top: posY + 26,
                   child: IgnorePointer(
                     child: Opacity(
                       opacity: (flameFlicker * opacity).clamp(0.0, 1.0),
@@ -1178,7 +1295,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
             // Photorealistic Birthday Cake with Subtle Candlelight Reflection Sweep
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -1211,13 +1328,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 10. 🧸 TEDDY
-  // "Create realistic soft-toy movement for the teddy. The teddy gently moves
-  // forward, naturally tilts its head, slightly moves its arms while holding
-  // the heart, subtle body movement simulates soft fabric and natural weight,
-  // the teddy gently returns to its original position. Realistic plush texture,
-  // soft lighting and natural shadows. Keep the original teddy face, heart,
-  // colors and proportions unchanged. No cartoon exaggeration, no magical
-  // effects."
+  // Flow: Walk in → Look → Hug heart → Approach → Wave → Walk out
   // ===========================================================================
   Widget _buildTeddyAnimation() {
     return AnimatedBuilder(
@@ -1228,25 +1339,42 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 190) / 2;
-        final double centerY = screenHeight * 0.35;
+        final double startY = screenHeight * 0.75;
+        final double targetY = screenHeight * 0.35;
+        final double exitY = screenHeight * 0.85;
 
-        // Teddy gently moves forward with natural weight and returns
-        final double scale = 0.94 + (sin(val * pi) * 0.12);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Naturally tilts its head with soft toy weight
-        final double tiltAngle = sin(val * 3 * pi) * 0.035;
+        // Flow: Walk in -> Look -> Hug heart -> Approach -> Wave -> Walk out
+        if (val < 0.28) {
+          // ① Dynamically walks into live video from bottom-center
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Looks, hugs heart, moves toward camera (depth), gives natural wave
+          final p = (val - 0.28) / 0.47;
+          posY = targetY;
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          // ③ Turns and walks out of live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
 
-        // Subtle body movement simulates soft fabric
+        final double tiltAngle = sin(val * 4 * pi) * 0.035;
         final double breathScaleY = 1.0 + (sin(val * 4 * pi) * 0.018);
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
 
         return Stack(
           children: [
             // Soft Realistic Ground Contact Shadow Beneath Teddy
             _buildRealisticGroundShadow(
               centerX: centerX + 95,
-              groundY: centerY + 160,
+              groundY: posY + 160,
               scale: scale,
               width: 170,
             ),
@@ -1254,7 +1382,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
             // Photorealistic Plush Teddy with Soft Studio Lighting Sweep
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -1290,12 +1418,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 2. 🐱 KITTY — CUTE CAT
-  // "Create realistic cat-like movement for the kitty sticker. The kitty gently
-  // moves its head, naturally blinks its eyes, slowly raises and moves one paw,
-  // slightly moves its ears and body, then settles back naturally. Subtle
-  // breathing movement and realistic soft lighting. Keep the original face,
-  // colors, design and proportions unchanged. No exaggerated cartoon movement,
-  // no magical effects, no excessive hearts or particles."
+  // Flow: Walk in → Look at host → Blink → Wave → Cute reaction → Walk out
   // ===========================================================================
   Widget _buildKittyAnimation() {
     return AnimatedBuilder(
@@ -1306,33 +1429,59 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 190) / 2;
-        final double centerY = screenHeight * 0.36;
+        final double startY = screenHeight * 0.75;
+        final double targetY = screenHeight * 0.35;
+        final double exitY = screenHeight * 0.85;
 
-        // Camera presentation forward and natural settle
-        final double scale = 0.94 + (sin(val * pi) * 0.12);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Kitty gently moves its head and body
-        final double tiltAngle = sin(val * 3 * pi) * 0.03;
+        // Flow: Walk in -> Look at host -> Blink -> Wave -> Cute reaction -> Walk out
+        if (val < 0.28) {
+          // ① Enters from bottom-center with natural body walking movement
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Looks toward live host, naturally blinks, moves ears, raises paw and waves
+          final p = (val - 0.28) / 0.47;
+          posY = targetY;
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          // ③ Takes small step backward and walks out of live video area
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
 
-        // Subtle breathing movement
+        final double tiltAngle = sin(val * 4 * pi) * 0.03;
         final double breathScaleY = 1.0 + (sin(val * 4 * pi) * 0.015);
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
 
         return Stack(
           children: [
             // Soft Realistic Ground Contact Shadow Beneath Kitty
             _buildRealisticGroundShadow(
               centerX: centerX + 95,
-              groundY: centerY + 160,
+              groundY: posY + 160,
               scale: scale,
               width: 170,
             ),
 
+            // Small soft luminous hearts floating around Kitty
+            if (val >= 0.35 && val <= 0.80)
+              _buildKittyFloatingHearts(
+                centerX: centerX + 95,
+                centerY: posY + 70,
+                progress: val,
+                opacity: opacity,
+              ),
+
             // Photorealistic Kitty with Soft Realistic Lighting
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -1368,12 +1517,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 3. 💕 TIKI LOVE
-  // "Create a realistic premium 3D motion for the Tiki Love gift. The logo
-  // gently moves forward toward the viewer with a subtle natural rotation, the
-  // glowing text and crown have a realistic light reflection, the heart elements
-  // gently pulse like illuminated objects, followed by a smooth slow camera
-  // push-in. Keep the exact original design, text, colors and proportions. No
-  // cartoon animation, no excessive particles, no deformation."
+  // Flow: Enter → Rotate → Move forward → Neon reflection → Present → Exit
   // ===========================================================================
   Widget _buildTikiLoveAnimation() {
     return AnimatedBuilder(
@@ -1384,23 +1528,42 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 210) / 2;
-        final double centerY = screenHeight * 0.35;
+        final double startY = screenHeight * 0.75;
+        final double targetY = screenHeight * 0.34;
+        final double exitY = screenHeight * 0.85;
 
-        // Smooth slow camera push-in and natural settle
-        final double scale = 0.92 + (sin(val * pi) * 0.16);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Subtle natural 3D rotation
+        // Flow: Enter -> Rotate -> Move forward -> Neon reflection -> Present -> Exit
+        if (val < 0.28) {
+          // ① Dynamically enters from bottom with realistic 3D depth
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Moves forward toward camera (scale push-in), crown & heart reflect neon light, tilts gently
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 3);
+          scale = 1.00 + (sin(p * pi) * 0.20);
+        } else {
+          // ③ Smoothly rotates backward and exits the live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
+
         final double rotY = sin(val * 2 * pi) * 0.10;
         final double rotX = -0.04 + (sin(val * 2 * pi) * 0.02);
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
 
         return Stack(
           children: [
             // Soft Realistic Ambient Ground Shadow
             _buildRealisticGroundShadow(
               centerX: centerX + 105,
-              groundY: centerY + 180,
+              groundY: posY + 180,
               scale: scale,
               width: 190,
             ),
@@ -1408,7 +1571,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
             // Heart Elements Gently Pulse like Illuminated Objects (Volumetric Studio Glow)
             _buildRealisticStudioAura(
               centerX: centerX + 105,
-              centerY: centerY + 105,
+              centerY: posY + 105,
               scale: scale,
               color: const Color(0xFFFF007F),
               radius: 210,
@@ -1418,7 +1581,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
             // Photorealistic Tiki Love Logo with Realistic Metallic Sheen across Crown and Text
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -1455,12 +1618,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 4. 💖 LOVE COIN
-  // "Create realistic 3D motion for the heart-shaped love coin. The coin slowly
-  // rotates naturally around its vertical axis while moving slightly toward the
-  // viewer, realistic metallic reflections travel across the surface, the pink
-  // heart has a subtle natural glow, then the coin gently slows and returns to
-  // its original position. Keep the original design, text, coin value and
-  // proportions exactly unchanged. No cartoon effects, no excessive particles."
+  // Flow: Fly in → Spin → Approach → Metallic reflection → Turn → Fly out
   // ===========================================================================
   Widget _buildLoveHeartAnimation() {
     return AnimatedBuilder(
@@ -1472,59 +1630,80 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
         final double centerX = (screenWidth - 200) / 2;
         final double centerY = screenHeight * 0.35;
+        final double startX = screenWidth + 60.0;
+        final double targetX = centerX;
+        final double exitY = -180.0;
 
-        // Moves slightly toward the viewer and returns
-        final double scale = 0.94 + (sin(val * pi) * 0.16);
+        double posX;
+        double posY;
+        double scale;
+        double rotY;
 
-        // Slowly rotates naturally around vertical axis in 3D
-        final double rotY = val * 2 * pi;
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+        // Flow: Fly in -> Spin -> Approach -> Metallic reflection -> Turn -> Fly out
+        if (val < 0.28) {
+          // ① Enters dynamically from right side, spinning around vertical axis
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posX = startX - (p * (startX - targetX));
+          posY = centerY;
+          scale = 0.88 + (p * 0.12);
+          rotY = val * 6 * pi;
+        } else if (val < 0.72) {
+          // ② Moves toward camera, metallic reflection, slows down and turns
+          final p = (val - 0.28) / 0.44;
+          posX = targetX;
+          posY = centerY + (sin(p * 2 * pi) * 4);
+          scale = 1.00 + (sin(p * pi) * 0.20);
+          rotY = (0.28 * 6 * pi) + (p * 2 * pi);
+        } else {
+          // ③ Smoothly travels UPWARD and exits the live video
+          final p = Curves.easeInCubic.transform((val - 0.72) / 0.28);
+          posX = targetX;
+          posY = centerY - (p * (centerY - exitY));
+          scale = 1.00 + (p * 0.10);
+          rotY = (0.28 * 6 * pi) + (2 * pi) + (p * 4 * pi);
+        }
 
         return Stack(
           children: [
             // Soft Realistic Ground Contact Shadow Beneath Coin
             _buildRealisticGroundShadow(
-              centerX: centerX + 100,
-              groundY: centerY + 175,
+              centerX: posX + 100,
+              groundY: posY + 175,
               scale: scale,
               width: 170,
             ),
 
             // Pink Heart Subtle Natural Glow
             _buildRealisticStudioAura(
-              centerX: centerX + 100,
-              centerY: centerY + 100,
+              centerX: posX + 100,
+              centerY: posY + 100,
               scale: scale,
               color: const Color(0xFFFF1744),
               radius: 190,
-              opacity: (0.24 + sin(val * 4 * pi) * 0.06) * opacity,
+              opacity: 0.24,
             ),
 
             // Photorealistic 3D Heart Coin with Realistic Metallic Reflection Sweep
             Positioned(
-              left: centerX,
-              top: centerY,
+              left: posX,
+              top: posY,
               child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0015)
-                        ..rotateY(rotY),
-                      child: SizedBox(
-                        width: 200,
-                        height: 200,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFFFD54F),
-                          child: Image.asset(
-                            AppAssets.giftLove,
-                            fit: BoxFit.contain,
-                          ),
+                child: Transform.scale(
+                  scale: scale,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.0015)
+                      ..rotateY(rotY),
+                    child: SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: _buildRealisticSpecularSheen(
+                        progress: val,
+                        lightColor: const Color(0xFFFFD54F),
+                        child: Image.asset(
+                          AppAssets.giftLove,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
@@ -1540,13 +1719,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 1. 🌹 FLOWERS — FLOWER BOUQUET
-  // "Create a realistic 3D motion of the flower bouquet. The bouquet gently
-  // moves forward as if being presented to someone, individual flowers and
-  // leaves naturally sway with subtle movement, petals move slightly from a soft
-  // breeze, realistic natural lighting and shadows, gentle camera push-in,
-  // natural depth of field. Keep the original bouquet design, colors, text and
-  // proportions unchanged. No cartoon motion, no magical effects, no excessive
-  // particles, no deformation."
+  // Flow: Rise → Present → Move closer → Natural flower movement → Petals → Exit
   // ===========================================================================
   Widget _buildFlowersAnimation() {
     return AnimatedBuilder(
@@ -1557,30 +1730,58 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 200) / 2;
-        final double centerY = screenHeight * 0.35;
+        final double startY = screenHeight * 0.78;
+        final double targetY = screenHeight * 0.35;
+        final double exitY = screenHeight * 0.85;
 
-        // Bouquet gently moves forward as if being presented to someone (camera push-in)
-        final double scale = 0.94 + (sin(val * pi) * 0.14);
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Individual flowers and leaves naturally sway with subtle movement from soft breeze
-        final double breezeSway = sin(val * 2 * pi) * 0.025;
+        // Flow: Rise -> Present -> Move closer -> Natural flower movement -> Petals -> Exit
+        if (val < 0.28) {
+          // ① Dynamically enters from bottom of screen, gently moving upward as if presenting to host
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Present, flowers and leaves sway with subtle movement, petals move slightly from soft breeze, moves closer to camera
+          final p = (val - 0.28) / 0.47;
+          posY = targetY + (sin(p * 2 * pi) * 4);
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          // ③ Bouquet slowly moves downward and completely disappears from live video
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.15);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
 
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+        final double breezeSway = sin(val * 4 * pi) * 0.025;
 
         return Stack(
           children: [
             // Realistic Soft Ground Contact Shadow Beneath Bouquet
             _buildRealisticGroundShadow(
               centerX: centerX + 100,
-              groundY: centerY + 175,
+              groundY: posY + 175,
               scale: scale,
               width: 180,
             ),
 
+            // A few petals naturally falling around bouquet
+            if (val >= 0.30 && val <= 0.85)
+              _buildFallingPetals(
+                centerX: centerX + 100,
+                centerY: posY + 90,
+                progress: val,
+                opacity: opacity,
+              ),
+
             // Photorealistic Flower Bouquet with Natural Studio Lighting Sweep
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: opacity,
@@ -1613,13 +1814,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 11. 🌍 WORLD TOUR
-  // "Create a realistic 3D Earth rotation. The globe slowly rotates naturally,
-  // realistic continents and oceans remain clearly visible, subtle atmospheric
-  // lighting moves across the surface, realistic city lights become visible on
-  // the darker side, the globe gently moves toward the camera and then returns.
-  // Premium cinematic space lighting, realistic Earth appearance, natural
-  // depth and shadows. Keep the original World Tour design and proportions
-  // unchanged. No cartoon effects, no excessive particles."
+  // Flow: Globe appears → Rotate → Airplane travels → Approach → Slow rotation → Exit
   // ===========================================================================
   Widget _buildWorldTourAnimation() {
     return AnimatedBuilder(
@@ -1630,52 +1825,68 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 210) / 2;
-        final double centerY = screenHeight * 0.33;
+        final double startY = screenHeight * 0.78;
+        final double targetY = screenHeight * 0.33;
+        final double exitY = -180.0;
 
-        // Globe gently moves toward the camera and then returns
-        final double scale = 0.94 + (sin(val * pi) * 0.16);
+        double posY;
+        double scale;
+        double rotY;
 
-        // Globe slowly rotates naturally in 3D
-        final double rotY = val * 2 * pi;
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+        // Flow: Globe appears -> Rotate -> Airplane travels -> Approach -> Slow rotation -> Exit
+        if (val < 0.28) {
+          // ① Enters from bottom, 3D rotating globe
+          final p = Curves.easeOutCubic.transform(val / 0.28);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+          rotY = val * 2.5 * pi;
+        } else if (val < 0.72) {
+          // ② Moves slightly toward camera (approach), rotates faster then slows, airplane orbits
+          final p = (val - 0.28) / 0.44;
+          posY = targetY + (sin(p * 2 * pi) * 3);
+          scale = 1.00 + (sin(p * pi) * 0.20);
+          rotY = (0.28 * 2.5 * pi) + (p * 2.0 * pi);
+        } else {
+          // ③ Rotation slows down, travels UPWARD out of live video
+          final p = Curves.easeInCubic.transform((val - 0.72) / 0.28);
+          posY = targetY - (p * (targetY - exitY));
+          scale = 1.00 + (p * 0.05);
+          rotY = (0.28 * 2.5 * pi) + (2.0 * pi) + (p * 0.8 * pi);
+        }
 
         return Stack(
           children: [
             // Atmospheric Rim Lighting (Subtle Blue Fresnel Glow)
             _buildRealisticStudioAura(
               centerX: centerX + 105,
-              centerY: centerY + 105,
+              centerY: posY + 105,
               scale: scale,
               color: const Color(0xFF00E5FF),
               radius: 220,
-              opacity: 0.25 * opacity,
+              opacity: 0.25,
             ),
 
             // Photorealistic 3D Earth Globe with Specular Sunlight Reflection Sweep
             Positioned(
               left: centerX,
-              top: centerY,
+              top: posY,
               child: IgnorePointer(
-                child: Opacity(
-                  opacity: opacity,
-                  child: Transform.scale(
-                    scale: scale,
-                    child: Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, 0.0014)
-                        ..rotateY(rotY),
-                      child: SizedBox(
-                        width: 210,
-                        height: 210,
-                        child: _buildRealisticSpecularSheen(
-                          progress: val,
-                          lightColor: const Color(0xFFB3E5FC),
-                          child: Image.asset(
-                            AppAssets.giftWorldTour,
-                            fit: BoxFit.contain,
-                          ),
+                child: Transform.scale(
+                  scale: scale,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, 0.0014)
+                      ..rotateY(rotY),
+                    child: SizedBox(
+                      width: 210,
+                      height: 210,
+                      child: _buildRealisticSpecularSheen(
+                        progress: val,
+                        lightColor: const Color(0xFFB3E5FC),
+                        child: Image.asset(
+                          AppAssets.giftWorldTour,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
@@ -1683,6 +1894,16 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
                 ),
               ),
             ),
+
+            // Realistic Airplane Traveling in Curved Orbit around Globe
+            if (val >= 0.15 && val <= 0.85)
+              _buildAirplaneOrbit(
+                centerX: centerX + 105,
+                centerY: posY + 105,
+                progress: val,
+                scale: scale,
+                opacity: 0.95,
+              ),
           ],
         );
       },
@@ -1691,13 +1912,7 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
 
   // ===========================================================================
   // 12. 🏰 CASTLE
-  // "Create a realistic cinematic 3D castle scene. The castle slowly rises from
-  // the clouds with natural movement, clouds gently move around the lower part of
-  // the castle, warm lights inside the castle windows gradually turn on, subtle
-  // sunlight reflects across the towers, the camera slowly pushes toward the
-  // castle, creating realistic depth and scale. Keep the original castle design,
-  // colors and proportions unchanged. Photorealistic materials, realistic
-  // clouds and lighting, no cartoon effects, no excessive magical particles."
+  // Flow: Rise → Clouds move → Lights turn on → Approach → Hold → Disappear
   // ===========================================================================
   Widget _buildCastleAnimation() {
     return AnimatedBuilder(
@@ -1708,17 +1923,32 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
         final screenHeight = MediaQuery.sizeOf(context).height;
 
         final double centerX = (screenWidth - 230) / 2;
-        final double centerY = screenHeight * 0.32;
+        final double startY = screenHeight * 0.80;
+        final double targetY = screenHeight * 0.33;
+        final double exitY = screenHeight * 0.50;
 
-        // Castle slowly rises with natural movement
-        final double riseProgress = Curves.easeOutCubic.transform((val / 0.45).clamp(0.0, 1.0));
-        final double startY = screenHeight * 0.44;
-        final double posY = startY - (riseProgress * (startY - centerY));
+        double posY;
+        double scale;
+        double opacity = 1.0;
 
-        // Camera slowly pushes toward the castle creating realistic depth and scale
-        final double scale = 0.94 + (sin(val * pi) * 0.16);
-
-        final double opacity = val > 0.85 ? ((1.0 - val) / 0.15).clamp(0.0, 1.0) : (val / 0.12).clamp(0.0, 1.0);
+        // Flow: Rise -> Clouds move -> Lights turn on -> Approach -> Hold -> Disappear
+        if (val < 0.30) {
+          // ① Castle slowly rises from clouds with natural movement
+          final p = Curves.easeOutCubic.transform(val / 0.30);
+          posY = startY - (p * (startY - targetY));
+          scale = 0.88 + (p * 0.12);
+        } else if (val < 0.75) {
+          // ② Clouds gently move around base, lights inside windows turn on, camera slowly pushes toward castle
+          final p = (val - 0.30) / 0.45;
+          posY = targetY;
+          scale = 1.00 + (sin(p * pi) * 0.18);
+        } else {
+          // ③ Slowly moves backward into clouds and disappears
+          final p = Curves.easeInCubic.transform((val - 0.75) / 0.25);
+          posY = targetY + (p * (exitY - targetY));
+          scale = 1.00 - (p * 0.25);
+          opacity = (1.0 - p).clamp(0.0, 1.0);
+        }
 
         return Stack(
           children: [
@@ -2239,6 +2469,237 @@ class ActiveGiftAnimationOverlayState extends State<ActiveGiftAnimationOverlay>
                 ],
                 stops: const [0.0, 0.55, 1.0],
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Subtle realistic tire smoke & road sparks for vehicle drift (No cartoon emojis)
+  Widget _buildSubtleTireDriftVfx({
+    required double left,
+    required double top,
+    required double opacity,
+  }) {
+    if (opacity <= 0.0) return const SizedBox.shrink();
+    return Positioned(
+      left: left,
+      top: top,
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: opacity.clamp(0.0, 0.70),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 32,
+                height: 18,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(9),
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.55),
+                      const Color(0xFFCFD8DC).withOpacity(0.35),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Color(0xFFFFD54F),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFFFF9100),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Gentle falling flower petals drifting around bouquet (No cartoon emojis)
+  Widget _buildFallingPetals({
+    required double centerX,
+    required double centerY,
+    required double progress,
+    required double opacity,
+  }) {
+    if (opacity <= 0.0) return const SizedBox.shrink();
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: opacity.clamp(0.0, 0.85),
+          child: Stack(
+            children: List.generate(5, (i) {
+              final driftP = ((progress * 1.5) + (i * 0.18)) % 1.0;
+              final petalX = centerX - 60 + (i * 32.0) + (sin(driftP * 4 * pi) * 16);
+              final petalY = centerY - 30 + (driftP * 180);
+              final rot = driftP * 4 * pi;
+
+              return Positioned(
+                left: petalX,
+                top: petalY,
+                child: Transform.rotate(
+                  angle: rot,
+                  child: Container(
+                    width: 10,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.elliptical(5, 7)),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFF80AB), Color(0xFFFF4081)],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF4081).withOpacity(0.35),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Subtle celebration confetti flakes drifting around Birthday Cake
+  Widget _buildCelebrationConfetti({
+    required double centerX,
+    required double centerY,
+    required double progress,
+    required double opacity,
+  }) {
+    if (opacity <= 0.0) return const SizedBox.shrink();
+    final colors = [
+      const Color(0xFFFFD700),
+      const Color(0xFFFF4081),
+      const Color(0xFF00E5FF),
+      const Color(0xFF76FF03),
+      const Color(0xFFE040FB),
+    ];
+
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: opacity.clamp(0.0, 0.80),
+          child: Stack(
+            children: List.generate(7, (i) {
+              final driftP = ((progress * 1.6) + (i * 0.14)) % 1.0;
+              final confX = centerX - 70 + (i * 26.0) + (sin(driftP * 3 * pi) * 12);
+              final confY = centerY - 40 + (driftP * 190);
+              final rot = driftP * 5 * pi;
+
+              return Positioned(
+                left: confX,
+                top: confY,
+                child: Transform.rotate(
+                  angle: rot,
+                  child: Container(
+                    width: 6,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(2),
+                      color: colors[i % colors.length],
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Small natural luminous heart elements around Kitty (Organic, not cartoon)
+  Widget _buildKittyFloatingHearts({
+    required double centerX,
+    required double centerY,
+    required double progress,
+    required double opacity,
+  }) {
+    if (opacity <= 0.0) return const SizedBox.shrink();
+    return Positioned.fill(
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: opacity.clamp(0.0, 0.75),
+          child: Stack(
+            children: List.generate(3, (i) {
+              final p = ((progress * 1.3) + (i * 0.30)) % 1.0;
+              final heartX = centerX + (i == 0 ? -45.0 : (i == 1 ? 50.0 : 0.0)) + (sin(p * 2 * pi) * 8);
+              final heartY = centerY + 10 - (p * 70);
+
+              return Positioned(
+                left: heartX,
+                top: heartY,
+                child: Opacity(
+                  opacity: (sin(p * pi)).clamp(0.0, 1.0),
+                  child: const Icon(
+                    Icons.favorite,
+                    size: 15,
+                    color: Color(0xFFFF80AB),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Realistic airplane traveling around curved orbit of World Tour globe
+  Widget _buildAirplaneOrbit({
+    required double centerX,
+    required double centerY,
+    required double progress,
+    required double scale,
+    required double opacity,
+  }) {
+    if (opacity <= 0.0) return const SizedBox.shrink();
+    // Circular orbital parametric math
+    final angle = progress * 2.5 * pi;
+    final radiusX = 118.0 * scale;
+    final radiusY = 48.0 * scale;
+    final planeX = centerX + (cos(angle) * radiusX);
+    final planeY = centerY + (sin(angle) * radiusY);
+    final headingAngle = angle + (pi / 2);
+
+    return Positioned(
+      left: planeX - 12,
+      top: planeY - 12,
+      child: IgnorePointer(
+        child: Opacity(
+          opacity: opacity.clamp(0.0, 0.95),
+          child: Transform.rotate(
+            angle: headingAngle,
+            child: const Icon(
+              Icons.airplanemode_active,
+              size: 20,
+              color: Colors.white,
+              shadows: [
+                BoxShadow(
+                  color: Color(0xFF00E5FF),
+                  blurRadius: 8,
+                  spreadRadius: 2,
+                ),
+              ],
             ),
           ),
         ),
